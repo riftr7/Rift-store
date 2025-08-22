@@ -46,6 +46,14 @@ const LOCATION_QUERY = 'Najaf, Iraq';
 function uid(){ try{ if(window.crypto && window.crypto.randomUUID){ return window.uid(); } }catch(e){} return 'id-' + Math.random().toString(36).slice(2); }
 
 
+// --- viewport (mobile) ---
+try {
+  const mq = window.matchMedia('(max-width: 640px)');
+  function applyMobile(){ document.body && document.body.classList.toggle('mobile', mq.matches); }
+  mq.addEventListener ? mq.addEventListener('change', applyMobile) : mq.addListener && mq.addListener(applyMobile);
+  applyMobile();
+} catch(_e){}
+
 // --- i18n ---
 const i18n = {
   en: {
