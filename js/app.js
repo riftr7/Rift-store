@@ -107,7 +107,7 @@ const i18n = {
     brand: 'ريفت',
     home: 'الرئيسية',
     services: 'الخدمات',
-    store: 'Store',
+    store: 'السلع الرقمية',
     about: 'من نحن',
     contact: 'تواصل',
     cart: 'السلة',
@@ -314,26 +314,28 @@ function normalizeIraqPhone(input){
 }
 
 // --- UI TEMPLATES ---
+
 function header(){
   const l = state.lang;
   return `
   <header class="header">
     <div class="header-inner container">
-      <div class="brand">
+      <a class="brand" href="#home" aria-label="Home">
         <img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
         <div>${t('brand')}</div>
-      </div>
+      </a>
       <div class="right">
         <div class="lang-switch">
           <div class="chip ${l==='en'?'active':''}" id="lang-en">EN</div>
           <div class="chip ${l==='ar'?'active':''}" id="lang-ar">AR</div>
         </div>
         <a class="btn ghost" href="#store">${t('store')}</a>
-        <a class="btn" href="#cart">${t('cart')} <span id="cart-count" class="badge"></span></a>
+        <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}">🛒<span id="cart-count" class="badge"></span></a>
         <div class="hamburger" id="hamburger" aria-label="Open menu"><span></span></div>
       </div>
     </div>
   </header>
+  <!-- Drawer is appended here so it's always present -->
   <div class="drawer" id="drawer">
     <div class="drawer-bg" id="drawer-bg"></div>
     <div class="drawer-panel">
@@ -344,7 +346,8 @@ function header(){
       <a class="nav-link" href="#about">${t('about')} <span>›</span></a>
       <a class="nav-link" href="#contact">${t('contact')} <span>›</span></a>
     </div>
-  </div>`;
+  </div>
+  `;
 }
 
 function footer(){
@@ -681,10 +684,12 @@ function render(){
   const drawer = document.getElementById('drawer');
   const burger = document.getElementById('hamburger');
   const bg = document.getElementById('drawer-bg');
-  function open(){ drawer.classList.add('open'); }
-  function close(){ drawer.classList.remove('open'); }
+  function open(){ if(drawer) drawer.classList.add('open'); }
+  function close(){ if(drawer) drawer.classList.remove('open'); }
   burger && burger.addEventListener('click', open);
   bg && bg.addEventListener('click', close);
+  // Close drawer when navigating
+  document.querySelectorAll('.nav-link').forEach(a=>a.addEventListener('click', close));
 
   // Language switch
   const en = document.getElementById('lang-en');
