@@ -308,3 +308,9 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 [dir="ltr"] .header-inner .right{ display:flex; align-items:center; gap:10px; }
 [dir="ltr"] .header-inner .right #lang-toggle{ order:99; }
 
+/* === LTR header final order: Store, Cart, (AR/EN toggle), Menu (rightmost) === */
+[dir="ltr"] .header-inner .right { display:flex; align-items:center; gap:10px; }
+[dir="ltr"] .header-inner .right #cart-btn { order: 10; }
+[dir="ltr"] .header-inner .right #lang-toggle { order: 98 !important; }
+[dir="ltr"] .header-inner .right #hamburger { order: 99 !important; }
+
