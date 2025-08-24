@@ -65,7 +65,7 @@ const i18n = {
     contact: 'Contact',
     cart: 'Cart',
     welcome: 'Welcome to Rift',
-    heroLine: 'Secure. Professional. Dependable.',
+    heroLine: 'Secure. Professional. Trusted.',
     exploreServices: 'Explore Services',
     whatWeDo: 'What we do',
     goToStore: 'Go to Store',
