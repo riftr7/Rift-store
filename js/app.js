@@ -65,7 +65,7 @@ const i18n = {
     contact: 'Contact',
     cart: 'Cart',
     welcome: 'Welcome to Rift',
-    heroLine: 'Clean. Fast. Professional.',
+    heroLine: 'Secure. Professional. Dependable.',
     exploreServices: 'Explore Services',
     whatWeDo: 'What we do',
     goToStore: 'Go to Store',
@@ -384,7 +384,7 @@ function viewHome(){
     <div class="hero-card">
       <div class="kicker">${t('welcome')}</div>
       <h1>${t('heroLine')}</h1>
-      <p class="small">Cart & Telegram handoff — all static for GitHub Pages.</p>
+      <p class="small">Welcome To Rift.</p>
     </div>
   </section>
   ${viewServices(true)}
