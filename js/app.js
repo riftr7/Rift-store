@@ -319,6 +319,21 @@ function normalizeIraqPhone(input){
   return ok ? s : null;
 }
 
+
+// --- Cart item modal helpers ---
+function openItemModal(it){
+  const m = document.getElementById('item-modal'); if(!m) return;
+  m.classList.add('open');
+  const sel = Object.entries(it.selections||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
+  document.getElementById('im-title').textContent = it.title || '';
+  document.getElementById('im-qty').textContent = 'x'+(it.qty||1);
+  document.getElementById('im-unit').textContent = it.unitPrice ? fmtIQD(it.unitPrice) : (state.lang==='ar'?'عند الطلب':'On request');
+  document.getElementById('im-sub').textContent = it.unitPrice ? fmtIQD(it.unitPrice*(it.qty||1)) : (state.lang==='ar'?'عند الطلب':'On request');
+  document.getElementById('im-sel').textContent = sel || '';
+  document.querySelectorAll('[data-close-modal]').forEach(b=> b.addEventListener('click', ()=> m.classList.remove('open')));
+}
+
+
 // --- UI TEMPLATES ---
 
 function header(){
@@ -517,10 +532,73 @@ function viewProduct(id){
   `;
 }
 
+
 function viewCart(){
   const rows = state.cart.map(i=>`
-    <tr>
-      <td><img src="${i.image || 'assets/apps.png'}" alt="" style="width:56px;height:36px;object-fit:cover;border-radius:8px;margin-right:8px;vertical-align:middle"> ${i.title}<div class="small">${Object.entries(i.selections).map(([k,v])=>`${k}: ${v}`).join(', ')}</div></td>
+    <tr data-item="${i.id}" class="cart-row">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <img src="${i.image || 'assets/apps.png'}" alt="" style="width:56px;height:36px;object-fit:cover;border-radius:8px">
+          <div>
+            <strong>${i.title}</strong>
+            <div class="small">${Object.entries(i.selections).map(([k,v])=>`${k}: ${v}`).join(', ')}</div>
+          </div>
+        </div>
+      </td>
+      <td>${i.unitPrice? fmtIQD(i.unitPrice): `<span class="small">${t('onRequest')}</span>`}</td>
+      <td>
+        <button class="btn accent" data-qty="${i.id}|-1">-</button>
+        <span style="padding:0 8px">${i.qty}</span>
+        <button class="btn accent" data-qty="${i.id}|1">+</button>
+      </td>
+      <td>${i.unitPrice? fmtIQD(i.unitPrice * i.qty): '<span class="small">—</span>'}</td>
+      <td>
+        <button class="bin-btn" title="${t('remove')}" data-remove="${i.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  return `
+  <section class="container">
+    <div class="section-title">
+      <div>
+        <div class="kicker">${t('cart')}</div>
+        <h2>${t('checkout')}</h2>
+      </div>
+      <div class="tag">${t('total')}: ${fmtIQD(cartTotal())}</div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <table class="table">
+          <thead><tr><th>Item</th><th>${t('price')}</th><th>${t('quantity')}</th><th>${t('subtotal')}</th><th></th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="5" class="small">${t('emptyCart')}</td></tr>`}</tbody>
+        </table>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+          <a class="btn ghost" href="#store">${t('continueShopping')}</a>
+          <button class="btn accent" id="checkout" ${state.cart.length? '' : 'disabled'}>${t('checkout')}</button>
+        </div>
+      </div>
+    </div>
+    <div id="item-modal" class="modal">
+      <div class="overlay" data-close-modal></div>
+      <div class="panel">
+        <h3 id="im-title"></h3>
+        <div class="row"><span class="small">${t('quantity')}</span><span id="im-qty"></span></div>
+        <div class="row"><span class="small">${t('price')}</span><span id="im-unit"></span></div>
+        <div class="row"><span class="small">${t('subtotal')}</span><span id="im-sub"></span></div>
+        <div class="row small" id="im-sel"></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+          <button class="btn" data-close-modal>Close</button>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+" alt="" style="width:56px;height:36px;object-fit:cover;border-radius:8px;margin-right:8px;vertical-align:middle"> ${i.title}<div class="small">${Object.entries(i.selections).map(([k,v])=>`${k}: ${v}`).join(', ')}</div></td>
       <td>${i.unitPrice? fmtIQD(i.unitPrice): `<span class="small">${t('onRequest')}</span>`}</td>
       <td>
         <button class="btn accent" data-qty="${i.id}|-1">-</button>
@@ -756,6 +834,38 @@ function render(){
   document.querySelectorAll('[data-remove]').forEach(btn=> btn.addEventListener('click', ()=> removeFromCart(btn.getAttribute('data-remove'))));
   document.querySelectorAll('[data-qty]').forEach(btn=> btn.addEventListener('click', ()=>{
     const [id,delta] = btn.getAttribute('data-qty').split('|'); changeQty(id, Number(delta));
+  }));
+  // Row click opens item detail modal
+  document.querySelectorAll('tr.cart-row').forEach(tr=>{
+    tr.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-remove]') || e.target.closest('[data-qty]')) return;
+      const id = tr.getAttribute('data-item');
+      const it = state.cart.find(x=>x.id===id);
+      if(it){ openItemModal(it); }
+    });
+  });
+
+
+  // Open item modal on row click
+  document.querySelectorAll('tr.cart-row').forEach(tr=>{
+    tr.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-remove]') || e.target.closest('[data-qty]')) return;
+      const id = tr.getAttribute('data-item');
+      const it = state.cart.find(x=>x.id===id);
+      if(!it) return;
+      const m = document.getElementById('item-modal');
+      m.classList.add('open');
+      document.getElementById('im-title').textContent = it.title;
+      document.getElementById('im-qty').textContent = String(it.qty);
+      document.getElementById('im-unit').textContent = it.unitPrice? fmtIQD(it.unitPrice): (state.lang==='ar'? 'عند الطلب':'On request');
+      document.getElementById('im-sub').textContent = it.unitPrice? fmtIQD(it.unitPrice*it.qty): '—';
+      document.getElementById('im-sel').textContent = Object.entries(it.selections).map(([k,v])=>`${k}: ${v}`).join(', ');
+    });
+  });
+
+  // Close modal
+  document.querySelectorAll('[data-close-modal]').forEach(btn=> btn.addEventListener('click', ()=>{
+    const m = document.getElementById('item-modal'); m && m.classList.remove('open');
   }));
 
   const checkoutBtn = document.getElementById('checkout');

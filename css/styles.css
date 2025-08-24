@@ -376,9 +376,7 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 }
 
 /* Tighter for 375px devices */
-@media (max-width: 375px){
-  [dir="ltr"] .brand > div{ display:none; } /* hide brand text, keep logo */
-  [dir="ltr"] .brand img.brand-logo{ width:30px; height:30px; }
+
   [dir="ltr"] .header-inner .right{ gap:6px; }
   [dir="ltr"] .header-inner .right .btn{ padding:5px 7px; font-size:11px; }
   [dir="ltr"] .header-inner .right .badge-btn{ width:34px; height:34px; min-width:34px; }
@@ -428,3 +426,50 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
   }
 }
 
+/* === FINAL: Center EN/AR toggle and sync badge sizing === */
+#lang-toggle.lang-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  line-height:1 !important;
+}
+
+@media (max-width: 414px){
+  #cart-btn .badge { min-width: 12px; height: 12px; font-size: 9px; line-height: 12px; right: 1px; bottom: 1px; }
+  #lang-toggle.lang-toggle{ padding:4px 8px; font-size:12px; min-width:36px; height:36px; }
+}
+@media (max-width: 375px){
+  #cart-btn .badge { min-width: 10px; height: 10px; font-size: 8px; line-height: 10px; right: 0; bottom: 0; }
+  #lang-toggle.lang-toggle{ padding:3px 7px; font-size:11px; min-width:32px; height:32px; }
+}
+
+
+/* === Ensure brand text visible on iPhone X === */
+@media (max-width: 375px){
+  .brand > div{
+    display:inline !important;
+    max-width:100px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+}
+
+/* === Cart: bin icon + item modal === */
+.bin-btn{
+  background:transparent;border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:6px 8px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px
+}
+.bin-btn:hover{ background:rgba(255,255,255,.06); }
+.bin-btn svg{ width:16px;height:16px; }
+
+.modal{ position:fixed; inset:0; display:none; place-items:center; z-index:70; }
+.modal.open{ display:grid; }
+.modal .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.6); }
+.modal .panel{ position:relative; background:var(--card); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; box-shadow:var(--shadow); padding:16px; width:min(520px, 92vw); }
+.modal .panel h3{ margin:6px 0 12px 0; }
+.modal .row{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin:8px 0; }
+.modal .small{ color:var(--muted); }
