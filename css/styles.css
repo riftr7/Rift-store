@@ -314,3 +314,50 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 [dir="ltr"] .header-inner .right #lang-toggle { order: 98 !important; }
 [dir="ltr"] .header-inner .right #hamburger { order: 99 !important; }
 
+/* === Responsive shrink fix for iPhone X and similar (avoid wrapping in header) === */
+@media (max-width: 414px){
+  .brand { font-size:16px; gap:6px; }
+  .brand img.brand-logo { width:32px; height:32px; }
+  .header-inner .right .btn,
+  .header-inner .right .chip,
+  .header-inner .right .hamburger {
+    font-size:12px;
+    padding:6px 8px;
+    height:36px;
+    min-width:36px;
+  }
+}
+
+/* === LTR small-phone fit (iPhone X / XR and below) === */
+@media (max-width: 414px){
+  [dir="ltr"] .header-inner{ padding:10px 12px; }
+  [dir="ltr"] .brand{ font-size:16px; gap:6px; }
+  [dir="ltr"] .brand img.brand-logo{ width:32px; height:32px; }
+
+  /* Keep everything on one line */
+  [dir="ltr"] .header-inner .right{ gap:8px; flex-wrap:nowrap; }
+
+  /* Slight shrink of controls */
+  [dir="ltr"] .header-inner .right .btn{ padding:6px 8px; font-size:12px; border-radius:12px; }
+  [dir="ltr"] .header-inner .right .btn.ghost[href="#store"]{ white-space:nowrap; }
+  [dir="ltr"] .header-inner .right .badge-btn{ padding:0; width:36px; height:36px; min-width:36px; }
+  [dir="ltr"] .header-inner .right .hamburger{ width:36px; height:36px; }
+  [dir="ltr"] #lang-toggle.lang-toggle{ padding:4px 8px; font-size:12px; }
+
+  /* Final order still: Store, Cart, Toggle, Menu (rightmost) */
+  [dir="ltr"] .header-inner .right #cart-btn { order: 10; }
+  [dir="ltr"] .header-inner .right #lang-toggle { order: 98 !important; }
+  [dir="ltr"] .header-inner .right #hamburger { order: 99 !important; }
+}
+
+/* Even narrower (old 375px-width phones) */
+@media (max-width: 375px){
+  [dir="ltr"] .brand{ font-size:15px; }
+  [dir="ltr"] .brand img.brand-logo{ width:30px; height:30px; }
+  [dir="ltr"] .header-inner .right{ gap:6px; }
+  [dir="ltr"] .header-inner .right .btn{ padding:5px 7px; font-size:11px; }
+  [dir="ltr"] .header-inner .right .badge-btn{ width:34px; height:34px; min-width:34px; }
+  [dir="ltr"] .header-inner .right .hamburger{ width:34px; height:34px; }
+  [dir="ltr"] #lang-toggle.lang-toggle{ padding:4px 7px; font-size:11px; }
+}
+
