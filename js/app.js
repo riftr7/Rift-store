@@ -598,40 +598,6 @@ function viewCart(){
     </div>
   </section>`;
 }
-" alt="" style="width:56px;height:36px;object-fit:cover;border-radius:8px;margin-right:8px;vertical-align:middle"> ${i.title}<div class="small">${Object.entries(i.selections).map(([k,v])=>`${k}: ${v}`).join(', ')}</div></td>
-      <td>${i.unitPrice? fmtIQD(i.unitPrice): `<span class="small">${t('onRequest')}</span>`}</td>
-      <td>
-        <button class="btn accent" data-qty="${i.id}|-1">-</button>
-        <span style="padding:0 8px">${i.qty}</span>
-        <button class="btn accent" data-qty="${i.id}|1">+</button>
-      </td>
-      <td>${i.unitPrice? fmtIQD(i.unitPrice * i.qty): '<span class="small">—</span>'}</td>
-      <td><button class="btn accent" data-remove="${i.id}">${t('remove')}</button></td>
-    </tr>
-  `).join('');
-  return `
-  <section class="container">
-    <div class="section-title">
-      <div>
-        <div class="kicker">${t('cart')}</div>
-        <h2>${t('checkout')}</h2>
-      </div>
-      <div class="tag">${t('total')}: ${fmtIQD(cartTotal())}</div>
-    </div>
-    <div class="card">
-      <div class="body">
-        <table class="table">
-          <thead><tr><th>Item</th><th>${t('price')}</th><th>${t('quantity')}</th><th>${t('subtotal')}</th><th></th></tr></thead>
-          <tbody>${rows || `<tr><td colspan="5" class="small">${t('emptyCart')}</td></tr>`}</tbody>
-        </table>
-        <div style="display:flex;gap:12px;justify-content:flex-end">
-          <a class="btn ghost" href="#store">${t('continueShopping')}</a>
-          <button class="btn accent" id="checkout" ${state.cart.length? '' : 'disabled'}>${t('checkout')}</button>
-        </div>
-      </div>
-    </div>
-  </section>`;
-}
 
 function viewCheckout(){
   return `
