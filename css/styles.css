@@ -13,7 +13,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
 a{color:inherit;text-decoration:none}
-.container{max-width:1200px;margin:0 auto;padding:24px}
+.container{max-width:none;width:100%;margin:0 auto;padding:24px}
 .header{position:sticky;top:0;z-index:50;background:rgba(11,14,19,.7);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
 .header-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.3px;font-size:22px}
@@ -21,7 +21,7 @@ a{color:inherit;text-decoration:none}
 .lang-switch{display:flex;gap:8px}
 .lang-switch .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);cursor:pointer}
 .lang-switch .chip.active{background:linear-gradient(180deg,var(--accent),#3b82f6);color:#fff;border:none}
-.hamburger{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow);background:rgba(255,255,255,.03)}
+.hamburger{margin-left:0;margin-right:0;width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow);background:rgba(255,255,255,.03)}
 .hamburger:active{transform:scale(.98)}
 .hamburger span{display:block;width:20px;height:2px;background:#e2e8f0;position:relative}
 .hamburger span:before,.hamburger span:after{content:"";position:absolute;left:0;width:20px;height:2px;background:#e2e8f0}
@@ -98,3 +98,37 @@ hr{border:0;border-top:1px solid rgba(255,255,255,.06);margin:12px 0}
 body.mobile .grid.cards{ grid-template-columns: 1fr; }
 body.mobile .choice-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
 body.mobile .btn.block, body.mobile .btn.block-m{ width:100%; }
+
+
+/* --- Mobile & overflow fixes (added) --- */
+html, body { max-width: 100%; overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* Use the image-based brand logo */
+.brand img.brand-logo,
+.brand-logo { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; box-shadow: var(--shadow); }
+
+/* Keep brand text uppercase next to logo */
+.brand { display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.6px; }
+.brand > div { text-transform: uppercase; }
+
+/* Prevent header overflow on small screens */
+@media (max-width: 400px){
+  .lang-switch, .right .btn { display: none !important; }
+  .header-inner { padding-right: 12px; padding-left: 12px; }
+}
+
+/* Safer containers on very small devices */
+.container { width: 100%; }
+
+/* Drawer direction RTL */
+.drawer{position:fixed;inset:0;pointer-events:none;z-index:60}
+.drawer.open{pointer-events:auto}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.4);opacity:0;transition:opacity .2s ease}
+.drawer.open .drawer-bg{opacity:1}
+.drawer-panel{position:absolute;top:0;bottom:0;right:0;width:380px;max-width:90vw;background:var(--card);box-shadow:var(--shadow);transform:translateX(100%);transition:transform .25s ease}
+.drawer.open .drawer-panel{transform:translateX(0)}
+
+/* When Arabic (rtl) we slide from the LEFT */
+.drawer.rtl .drawer-panel{left:0;right:auto;transform:translateX(-100%)}
+.drawer.open.rtl .drawer-panel{transform:translateX(0)}

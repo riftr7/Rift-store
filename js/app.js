@@ -57,7 +57,7 @@ try {
 // --- i18n ---
 const i18n = {
   en: {
-    brand: 'Rift',
+    brand: 'RIFT',
     home: 'Home',
     services: 'Services',
     store: 'Digital Goods',
@@ -107,12 +107,12 @@ const i18n = {
     brand: 'ريفت',
     home: 'الرئيسية',
     services: 'الخدمات',
-    store: 'السلع الرقمية',
+    store: 'Store',
     about: 'من نحن',
     contact: 'تواصل',
     cart: 'السلة',
     welcome: 'مرحباً بك في ريفت',
-    heroLine: 'خدمة نظيفة وسريعة واحترافية',
+    heroLine: 'آمن. محترف. موثوق.',
     exploreServices: 'استكشف الخدمات',
     whatWeDo: 'ماذا نقدم',
     goToStore: 'اذهب للمتجر',
@@ -320,7 +320,7 @@ function header(){
   <header class="header">
     <div class="header-inner container">
       <div class="brand">
-        <div class="brand-mark"></div>
+        <img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
         <div>${t('brand')}</div>
       </div>
       <div class="right">
@@ -352,7 +352,7 @@ function footer(){
   <footer class="footer">
     <div class="container cols footer cols">
       <div>
-        <div class="brand"><div class="brand-mark"></div><div>${t('brand')}</div></div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>${t('brand')}</div></div>
         <p class="small">${t('trusted')}</p>
       </div>
       <div>
@@ -375,7 +375,7 @@ function footer(){
       </div>
     </div>
   </footer>
-  <div class="watermark-fixed">Hussein Raheem</div>`;
+  <div class="watermark-fixed">Hussein Raheem Al-Abedi / حسين رحيم العابدي</div>`;
 }
 
 function viewHome(){
@@ -384,7 +384,7 @@ function viewHome(){
     <div class="hero-card">
       <div class="kicker">${t('welcome')}</div>
       <h1>${t('heroLine')}</h1>
-      <p class="small">Welcome To Rift.</p>
+      
     </div>
   </section>
   ${viewServices(true)}
