@@ -292,6 +292,12 @@ function addToCart(id, selections){
     enableIfValid();
   }
 
+  // Header single toggle for language
+  (function(){
+    var lt = document.getElementById('lang-toggle');
+    if(lt){ lt.addEventListener('click', function(){ setLang(state.lang==='ar' ? 'en' : 'ar'); }); }
+  })();
+
   renderCartIndicator();
 }
 function removeFromCart(id){ state.cart = state.cart.filter(i=>i.id!==id); saveCart(); render(); }
@@ -325,10 +331,11 @@ function header(){
         <div>${t('brand')}</div>
       </a>
       <div class="right">
-        <div class="lang-switch">
-          <div class="chip ${l==='en'?'active':''}" id="lang-en">EN</div>
-          <div class="chip ${l==='ar'?'active':''}" id="lang-ar">AR</div>
+        
+       
         </div>
+        
+        <div class="chip lang-toggle" id="lang-toggle">${state.lang==='ar'?'EN':'AR'}</div>
         <a class="btn ghost" href="#store">${t('store')}</a>
         <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}">🛒<span id="cart-count" class="badge"></span></a>
         <div class="hamburger" id="hamburger" aria-label="Open menu"><span></span></div>
@@ -338,15 +345,21 @@ function header(){
   <!-- Drawer is appended here so it's always present -->
   <div class="drawer" id="drawer">
     <div class="drawer-bg" id="drawer-bg"></div>
-    <div class="drawer-panel">
+    
+<div class="drawer-panel">
       <h3>${t('brand')}</h3>
       <a class="nav-link" href="#home">${t('home')} <span>›</span></a>
       <a class="nav-link" href="#services">${t('services')} <span>›</span></a>
       <a class="nav-link" href="#store">${t('store')} <span>›</span></a>
       <a class="nav-link" href="#about">${t('about')} <span>›</span></a>
       <a class="nav-link" href="#contact">${t('contact')} <span>›</span></a>
+      <div class="lang-menu">
+        <div class="chip" id="lang-en">🇬🇧 English</div>
+        <div class="chip" id="lang-ar">🇮🇶 العربية</div>
+      </div>
     </div>
   </div>
+
   `;
 }
 
@@ -696,6 +709,10 @@ function render(){
   const ar = document.getElementById('lang-ar');
   en && en.addEventListener('click', ()=> setLang('en'));
   ar && ar.addEventListener('click', ()=> setLang('ar'));
+  const enm = document.getElementById('lang-en-menu');
+  const arm = document.getElementById('lang-ar-menu');
+  enm && enm.addEventListener('click', ()=> setLang('en'));
+  arm && arm.addEventListener('click', ()=> setLang('ar'));
 
   // Product card open
   document.querySelectorAll('[data-open]').forEach(card=>{
@@ -796,6 +813,12 @@ function render(){
     cityEl && cityEl.addEventListener('input', enableIfValid);
     enableIfValid();
   }
+
+  // Header single toggle for language
+  (function(){
+    var lt = document.getElementById('lang-toggle');
+    if(lt){ lt.addEventListener('click', function(){ setLang(state.lang==='ar' ? 'en' : 'ar'); }); }
+  })();
 
   renderCartIndicator();
 }

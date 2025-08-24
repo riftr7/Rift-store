@@ -245,3 +245,66 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
   .btn.ghost[href="#store"]{ white-space:nowrap; }
 }
 
+/* === Language menu inside drawer === */
+.lang-menu{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.lang-menu .chip{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  background:rgba(255,255,255,.05);
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.lang-menu .chip:hover{
+  background:rgba(255,255,255,.1);
+}
+
+/* === Header compact: brand + Digital Goods + cart + menu (no lang in header) === */
+.header-inner .right{ display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
+.header-inner .right .btn.ghost[href="#store"]{ white-space:nowrap; }
+
+/* Drawer language section styling */
+.drawer .lang-menu{ margin-top:16px; padding-top:8px; border-top:1px solid rgba(255,255,255,.06); }
+.drawer .lang-menu .lang-switch{ display:flex; gap:8px; }
+.drawer .lang-menu .chip{ display:inline-flex; align-items:center; gap:8px; }
+.drawer .lang-menu .chip::before{ content:''; }
+
+/* Small phones (iPhone X/XR width) keep items in one row */
+@media (max-width: 390px){
+  .header-inner{ padding:12px; }
+  .header-inner .right{ gap:8px; }
+  .badge-btn{ padding:0; width:40px; height:40px; min-width:40px; }
+  .hamburger{ width:40px; height:40px; }
+}
+
+
+
+/* === RTL header order without lang chips: Menu, Cart, Store === */
+[dir="rtl"] .header-inner .right{ direction:ltr; }
+[dir="rtl"] .header-inner .right #hamburger{ order:1 !important; }
+[dir="rtl"] .header-inner .right #cart-btn{ order:2 !important; }
+[dir="rtl"] .header-inner .right a[href="#store"]{ order:3 !important; }
+
+/* === Single header language toggle chip === */
+.lang-toggle{ padding:6px 10px; border:1px solid rgba(255,255,255,.12); border-radius:999px; cursor:pointer; user-select:none; }
+.lang-toggle:active{ transform:scale(.98); }
+
+/* RTL left->right order with toggle: Menu, Toggle, Cart, Store */
+[dir="rtl"] .header-inner .right{ direction:ltr; }
+[dir="rtl"] .header-inner .right #hamburger{ order:1 !important; }
+[dir="rtl"] .header-inner .right #lang-toggle{ order:2 !important; }
+[dir="rtl"] .header-inner .right #cart-btn{ order:3 !important; }
+[dir="rtl"] .header-inner .right a[href="#store"]{ order:4 !important; }
+
+/* LTR: keep toggle at the far right for cleanliness */
+[dir="ltr"] .header-inner .right{ display:flex; align-items:center; gap:10px; }
+[dir="ltr"] .header-inner .right #lang-toggle{ order:99; }
+
