@@ -264,7 +264,7 @@ function minPrice(productId){
 
 // --- Helpers ---
 function saveCart(){ localStorage.setItem('cart', JSON.stringify(state.cart)); }
-function setLang(l){ state.lang=l; localStorage.setItem('lang', l); document.documentElement.dir = (l==='ar'?'rtl':'ltr'); render(); }
+function setLang(l){ state.lang=l; localStorage.setItem('lang', l); document.documentElement.setAttribute('lang', l); document.documentElement.dir = (l==='ar'?'rtl':'ltr'); render(); }
 function navigate(route){ state.route = route; window.location.hash = route; render(); }
 window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',''); if(r){ state.route = r; render(); } });
 
@@ -378,7 +378,7 @@ function footer(){
       </div>
     </div>
   </footer>
-  <div class="watermark-fixed">Hussein Raheem Al-Abedi / حسين رحيم العابدي</div>`;
+  <div class="watermark-fixed">${state.lang==='ar' ? 'حسين رحيم العابدي' : 'Hussein Raheem Al-Abedi'}</div>`;
 }
 
 function viewHome(){
@@ -801,6 +801,29 @@ function render(){
 }
 
 if (document.readyState !== 'loading') { try { const r = location.hash.replace('#',''); state.route = r || 'home'; render(); } catch(e) { console.error(e); } }
+
+// Sync hamburger icon with drawer open/close
+(function(){
+  function syncHamburger(){
+    var d = document.getElementById('drawer');
+    var h = document.getElementById('hamburger');
+    if(!d || !h) return;
+    if(d.classList.contains('open')){
+      h.classList.add('open');
+      h.setAttribute('aria-label', state.lang==='ar' ? 'إغلاق القائمة' : 'Close menu');
+    } else {
+      h.classList.remove('open');
+      h.setAttribute('aria-label', state.lang==='ar' ? 'فتح القائمة' : 'Open menu');
+    }
+  }
+  var mo = new MutationObserver(syncHamburger);
+  document.addEventListener('DOMContentLoaded', function(){
+    var d = document.getElementById('drawer');
+    if(d){ mo.observe(d, {attributes:true, attributeFilter:['class']}); syncHamburger(); }
+  });
+})();
+
+
 document.addEventListener('DOMContentLoaded', ()=>{
   if(!localStorage.getItem('lang')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('lang','ar'); } else { localStorage.setItem('lang','en'); } }catch(e){} }
   const r = location.hash.replace('#',''); state.route = r || 'home'; render();

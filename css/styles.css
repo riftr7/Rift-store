@@ -141,3 +141,88 @@ a:focus,button:focus{outline:none}
 .drawer.open .drawer-panel{transform:translateX(0)}
 html[dir="rtl"] .drawer-panel{left:0;right:auto;transform:translateX(-100%)}
 html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
+
+/* === Language switch pinning & RTL header ordering === */
+.header-inner{ position: relative; }
+.header-inner .right{ display:flex; align-items:center; gap:12px; }
+.header-inner .right .lang-switch{ margin-left:auto; } /* pins EN/AR to outer edge in LTR */
+
+[dir="rtl"] .header-inner .right{ flex-direction: row; }
+[dir="rtl"] .header-inner .right .lang-switch{ order: 99; margin-left: 0; margin-right: 0; } /* keep EN/AR at far right */
+[dir="rtl"] .header-inner .right .btn,
+[dir="rtl"] .header-inner .right .badge-btn,
+[dir="rtl"] .header-inner .right .hamburger{ order: 1; } /* menu/cart/store sit to the left of lang-switch */
+
+/* === Hamburger open animation === */
+.hamburger{ position: relative; }
+.hamburger span, .hamburger span:before, .hamburger span:after{ transition: transform .25s ease, opacity .2s ease; transform-origin: center; }
+.hamburger.open span{ background: transparent; }
+.hamburger.open span:before{ transform: translateY(6px) rotate(45deg); }
+.hamburger.open span:after{ transform: translateY(-6px) rotate(-45deg); }
+
+/* Keep hamburger at top while drawer open */
+.drawer.open ~ * {}
+/* header is already sticky; ensure z-index */
+.header{ z-index: 60; }
+
+/* === Mobile cart: single-line, tidy layout === */
+@media (max-width: 640px){
+  .table{ width:100%; border-collapse: collapse; }
+  .table thead{ display:none; }
+  .table tr{ display:grid; grid-template-columns: 1fr auto auto auto auto; gap:8px; align-items:center; border-bottom:1px solid rgba(255,255,255,.06); padding:8px 0; }
+  .table td{ border:none; padding:4px 0; }
+  .table td:first-child{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .badge-btn .badge{ transform: translateY(-2px); }
+}
+/* Ensure watermark does not overlay controls on mobile */
+.watermark-fixed{ pointer-events:none; opacity:.5; position:fixed; bottom:8px; right:12px; left:auto; font-size:12px }
+[dir="rtl"] .watermark-fixed{ right:auto; left:12px; }
+
+
+
+/* === RTL Header Ordering Fix === */
+[dir="rtl"] .header-inner .right{
+  flex-direction: row-reverse;
+}
+[dir="rtl"] .header-inner .right .hamburger{ order: 1; }
+[dir="rtl"] .header-inner .right #cart-btn{ order: 2; }
+[dir="rtl"] .header-inner .right .lang-switch{ order: 3; margin-left:0; margin-right:auto; }
+[dir="rtl"] .header-inner .right a.btn.ghost[href="#store"]{ order: 4; }
+
+/* === RTL header ordering (left-to-right sequence): menu, EN/AR, cart, store === */
+[dir="rtl"] .header-inner .right{ direction:ltr; }
+[dir="rtl"] .header-inner .right #hamburger{ order:1; }
+[dir="rtl"] .header-inner .right .lang-switch{ order:2; }
+[dir="rtl"] .header-inner .right #cart-btn{ order:3; }
+[dir="rtl"] .header-inner .right a[href="#store"]{ order:4; }
+
+/* === FINAL RTL ORDER OVERRIDE (wins over any earlier rules) === */
+[dir="rtl"] .header-inner .right{ direction:ltr; justify-content:flex-start; }
+[dir="rtl"] .header-inner .right #hamburger{ order:1 !important; }
+[dir="rtl"] .header-inner .right .lang-switch{ order:2 !important; }
+[dir="rtl"] .header-inner .right #cart-btn{ order:3 !important; }
+[dir="rtl"] .header-inner .right a[href="#store"]{ order:4 !important; }
+
+/* === ABSOLUTE RTL HEADER FIX === */
+[dir="rtl"] .header-inner .right {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+[dir="rtl"] .header-inner .right #hamburger { order: 1 !important; }
+[dir="rtl"] .header-inner .right .lang-switch { order: 2 !important; }
+[dir="rtl"] .header-inner .right #cart-btn { order: 3 !important; }
+[dir="rtl"] .header-inner .right a[href="#store"] { order: 4 !important; }
+
+/* === ABSOLUTE FINAL RTL ORDER (Left→Right): MENU, EN/AR, CART, STORE === */
+[dir="rtl"] .header-inner .right{
+  direction:ltr;
+  display:flex;
+  justify-content:flex-start !important;
+}
+/* Exact elements, forced order */
+[dir="rtl"] .header-inner .right #hamburger{ order:1 !important; }
+[dir="rtl"] .header-inner .right .lang-switch{ order:2 !important; margin-left:0 !important; margin-right:0 !important; }
+[dir="rtl"] .header-inner .right #cart-btn{ order:3 !important; }
+[dir="rtl"] .header-inner .right a[href="#store"]{ order:4 !important; }
+
