@@ -331,15 +331,12 @@ function header(){
         <div>${t('brand')}</div>
       </a>
       <div class="right">
-        
-       
-        </div>
-        
-        <div class="chip lang-toggle" id="lang-toggle">${state.lang==='ar'?'EN':'AR'}</div>
         <a class="btn ghost" href="#store">${t('store')}</a>
         <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}">🛒<span id="cart-count" class="badge"></span></a>
         <div class="hamburger" id="hamburger" aria-label="Open menu"><span></span></div>
+        <div class="chip lang-toggle" id="lang-toggle">${state.lang==='ar'?'EN':'AR'}</div>
       </div>
+
     </div>
   </header>
   <!-- Drawer is appended here so it's always present -->
