@@ -7,41 +7,7 @@ const INSTAGRAM = 'rift_r7';
 const LOCATION_QUERY = 'Najaf, Iraq';
 
 // --- Error overlay (avoids silent blank screens) ---
-(function(){
-  if (window.__riftErrorOverlayInstalled) return;
-  window.__riftErrorOverlayInstalled = true;
-  function show(msg){
-    try{
-      var o = document.getElementById('rift-error-overlay');
-      if(!o){
-        o = document.createElement('div');
-        o.id = 'rift-error-overlay';
-        o.style.position = 'fixed';
-        o.style.inset = '0';
-        o.style.background = 'rgba(10,10,10,.95)';
-        o.style.color = '#fca5a5';
-        o.style.padding = '18px';
-        o.style.fontFamily = 'ui-monospace,Consolas,monospace';
-        o.style.fontSize = '12px';
-        o.style.zIndex = '999999';
-        o.style.whiteSpace = 'pre-wrap';
-        document.body.appendChild(o);
-      }
-      o.textContent = 'Rift runtime error:\n\n' + msg + '\n\nOpen DevTools → Console for details.';
-    }catch(e){}
-  }
-  window.addEventListener('error', function(e){
-    if(e && e.message){ show(e.message); }
-  });
-  window.addEventListener('unhandledrejection', function(e){
-    try{
-      var m = (e && (e.reason && (e.reason.stack || e.reason.message))) || String(e.reason || e);
-      show(m);
-    }catch(_){ show('Unhandled promise rejection'); }
-  });
-})();
-
-
+(function(){ window.__riftErrorOverlayInstalled = true; window.__RIFT_OVERLAY_DISABLED = true; function show(){ /* overlay disabled */ } })();
 // uid helper for older browsers
 function uid(){ try{ if(window.crypto && window.crypto.randomUUID){ return window.uid(); } }catch(e){} return 'id-' + Math.random().toString(36).slice(2); }
 
@@ -112,7 +78,7 @@ const i18n = {
     contact: 'تواصل',
     cart: 'السلة',
     welcome: 'مرحباً بك في ريفت',
-    heroLine: 'آمن. محترف. موثوق.',
+    heroLine: 'آمن. احترافي. موثوق.',
     exploreServices: 'استكشف الخدمات',
     whatWeDo: 'ماذا نقدم',
     goToStore: 'اذهب للمتجر',
@@ -161,21 +127,33 @@ const state = {
   cart: JSON.parse(localStorage.getItem('cart')||'[]'),
   invoiceDetails: null,
   products: [
-    { id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100,500]}] },
-    { id:'chatgpt', cat:'digital', title_en:'ChatGPT Account (per month)', title_ar:'حساب ChatGPT (شهري)', image:'assets/chatgpt.png', options:[{key:'months', choices:[1,3,6,12]}] },
-    { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire.png', options:[{key:'diamonds', choices:[100]}] },
-    { id:'pubg', cat:'digital', title_en:'PUBG Mobile UC', title_ar:'شدات ببجي موبايل', image:'assets/pubg.png', options:[{key:'uc', choices:[60,325,660,1800,3850,8100,16000,24300,32400,40500]}] },
-    { id:'xbox', cat:'digital', title_en:'Xbox (Membership / Gift Cards)', title_ar:'اكس بوكس (اشتراك/بطاقات)', image:'assets/xbox.png', options:[{key:'type', choices:['Membership 1 Month','Membership 3 Months','Membership 12 Months','$10','$15','$20']}] },
-    { id:'minecraft', cat:'digital', title_en:'Minecraft Minecoins', title_ar:'Minecoins ماينكرافت', image:'assets/minecraft.png', options:[{key:'minecoins', choices:[3500]}] },
-    { id:'discord', cat:'digital', title_en:'Discord Nitro', title_ar:'ديسكورد نيترو', image:'assets/discord.png', options:[{key:'plan', choices:['Nitro Classic Monthly (INT)','Nitro Monthly (INT)']}] },
+        { id:'chatgpt-personal', cat:'digital', title_en:'ChatGPT Personal Accounts', title_ar:'حسابات فردية (شهر واحد)', image:'assets/chatgpt\-personal\.png', options:[{key:'plan', choices:['1 Month']}] },
+    { id:'chatgpt-shared', cat:'digital', title_en:'ChatGPT Shared Accounts', title_ar:'حسابات مشتركة', image:'assets/chatgpt\-shared\.png', options:[{key:'plan', choices:['1 Month','1 Year']}] },
+    { id:'canva', cat:'digital', title_en:'Canva Pro', title_ar:'كانفا برو', image:'assets/canva.png', options:[{key:'term', choices:['1 Year','3 Years','Forever']}] },
+    { id:'duolingo', cat:'digital', title_en:'Duolingo Plus', title_ar:'دولينغو بلس', image:'assets/duolingo.png', options:[{key:'term', choices:['1 Year','Forever']}] },
+    { id:'adobecc', cat:'digital', title_en:'Adobe Creative Cloud', title_ar:'أدوبي كريتيف كلاود', image:'assets/adobecc.png', desc_en:'12 months • 2 devices • 100GB cloud storage', desc_ar:'12 شهر • جهازان • 100GB تخزين سحابي', options:[{key:'term', choices:['1 Year']}] },
+    { id:'primevideo', cat:'digital', title_en:'Amazon Prime Video', title_ar:'أمازون برايم فيديو', image:'assets/primevideo\.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
+    { id:'netflix', cat:'digital', title_en:'Netflix', title_ar:'نتفليكس', image:'assets/netflix\.png', options:[{key:'term', choices:['1 Month','3 Months','6 Months','1 Year']}] },
+    { id:'shahid', cat:'digital', title_en:'Shahid VIP', title_ar:'شاهد VIP', image:'assets/shahid.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
+    { id:'disneyplus', cat:'digital', title_en:'Disney+', title_ar:'ديزني+', image:'assets/disneyplus.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
+    { id:'capcut', cat:'digital', title_en:'CapCut Pro', title_ar:'كاب كت برو', image:'assets/capcut\.jpeg', options:[{key:'term', choices:['1 Month','1 Year']}] },
+{ id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100,500]}] },
+        { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire\.jpeg', options:[{key:'diamonds', choices:[100]}] },
+    { id:'pubg', cat:'digital', title_en:'PUBG Mobile UC', title_ar:'شدات ببجي موبايل', image:'assets/pubg\.jpg', options:[{key:'uc', choices:[60,325,660,1800,3850,8100,16000,24300,32400,40500]}] },
+    { id:'xbox', cat:'digital', title_en:'Xbox (Membership / Gift Cards)', title_ar:'اكس بوكس (اشتراك/بطاقات)', image:'assets/xbox\.png', options:[{key:'type', choices:['Membership 1 Month','Membership 3 Months','Membership 12 Months','$10','$15','$20']}] },
+    { id:'minecraft', cat:'digital', title_en:'Minecraft Minecoins', title_ar:'Minecoins ماينكرافت', image:'assets/minecraft\.jpg', options:[{key:'minecoins', choices:[3500]}] },
+    { id:'discord', cat:'digital', title_en:'Discord Nitro', title_ar:'ديسكورد نيترو', image:'assets/discord\.png', options:[{key:'plan', choices:['Nitro Classic Monthly (INT)','Nitro Monthly (INT)']}] },
 
     
+        { id:'office', cat:'digital', title_en:'Microsoft Office', title_ar:'مايكروسوفت أوفيس', image:'assets/office\.png', options:[{key:'version', choices:['2016','2019']}] },
+    { id:'perplexity', cat:'digital', title_en:'Perplexity Pro', title_ar:'بيربلكسيتي برو', image:'assets/perplexity\.png', options:[{key:'term', choices:['1 Year']}] },
+
     // Services
-    { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر (خدمة)', image:'assets/pcopt.png', options:[{key:'notes', textarea:true}] },
+    { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر', image:'assets/pcopt.png', options:[{key:'notes', textarea:true}] },
     { id:'svc-mobile', cat:'service', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.png', options:[{key:'notes', textarea:true}] },
     { id:'svc-cloud', cat:'service', title_en:'Cloud Accounts', title_ar:'حسابات سحابية', image:'assets/cloud.png', options:[{key:'notes', textarea:true}] },
     { id:'svc-webprog', cat:'service', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/apps.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/programs.png', options:[{key:'notes', textarea:true}] },
+    { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/appprog\.png', options:[{key:'notes', textarea:true}] },
     { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.png', options:[{key:'notes', textarea:true}] },
     { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programs.png', options:[{key:'notes', textarea:true}] },
 
@@ -210,6 +188,17 @@ services: [
 // --- Prices (IQD) ---
 const fmtIQD = (n)=> new Intl.NumberFormat('en-US').format(n) + ' IQD';
 const pricesIQD = {
+  capcut:{'1 Month':12000,'1 Year':50000},
+  disneyplus:{'1 Month':12000,'1 Year':55000},
+  shahid:{'1 Month':8000,'1 Year':35000},
+  netflix:{'1 Month':8000,'3 Months':12000,'6 Months':22000,'1 Year':35000},primevideo:{'1 Month':11000,'1 Year':65000},
+  adobecc:{'1 Year':155000},
+  duolingo:{'1 Year':20000,'Forever':40000},
+  canva:{'1 Year':6000,'3 Years':11000,'Forever':21000},
+  chatgptShared:{'1 Month':12000,'1 Year':50000},
+  chatgptPersonal:{'1 Month':16000},
+  office:{'2016':5000,'2019':10000},
+  perplexity:{'1 Year':30000},
   chatgptPerMonth: 12000,
   itunes: {2:3000, 3:4500, 4:5500, 5:7000, 10:13000, 15:21000, 20:27000, 25:35000, 30:42000, 40:53000, 50:68500, 60:81500, 100:136500, 500:680000},
   freefire: {100:1500, 210:3000, 350:7000, 1080:14000, 2200:28000},
@@ -231,7 +220,18 @@ function serviceDesc(s){
 
 function priceFor(productId, selections){
   switch(productId){
+    case 'capcut': return pricesIQD.capcut[selections.term]||0;
+    case 'disneyplus': return pricesIQD.disneyplus[selections.term]||0;
+    case 'shahid': return pricesIQD.shahid[selections.term]||0;
+    case 'netflix': return pricesIQD.netflix[selections.term]||0;case 'primevideo': return pricesIQD.primevideo[selections.term]||0;
+    case 'adobecc': return pricesIQD.adobecc[selections.term]||0;
+    case 'duolingo': return pricesIQD.duolingo[selections.term]||0;
+    case 'canva': return pricesIQD.canva[selections.term]||0;
     case 'itunes': return pricesIQD.itunes[Number(selections.amount)]||0;
+    case 'chatgpt-shared': return pricesIQD.chatgptShared[selections.plan]||0;
+    case 'chatgpt-personal': return pricesIQD.chatgptPersonal[selections.plan]||0;
+    case 'office': return pricesIQD.office[selections.version]||0;
+    case 'perplexity': return pricesIQD.perplexity[selections.term]||0;
     case 'chatgpt': {
       const m = Number(selections.months);
       if(m===1) return 12000;
@@ -251,7 +251,16 @@ function priceFor(productId, selections){
 
 function minPrice(productId){
   switch(productId){
+    case 'capcut': return Math.min(...Object.values(pricesIQD.capcut));
+    case 'disneyplus': return Math.min(...Object.values(pricesIQD.disneyplus));
+    case 'shahid': return Math.min(...Object.values(pricesIQD.shahid));
+    case 'netflix': return Math.min(...Object.values(pricesIQD.netflix));case 'primevideo': return Math.min(...Object.values(pricesIQD.primevideo));
+    case 'adobecc': return Math.min(...Object.values(pricesIQD.adobecc));
+    case 'duolingo': return Math.min(...Object.values(pricesIQD.duolingo));
+    case 'canva': return Math.min(...Object.values(pricesIQD.canva));
     case 'itunes': return Math.min(...Object.values(pricesIQD.itunes));
+    case 'chatgpt-personal': return Math.min(...Object.values(pricesIQD.chatgptPersonal));
+    case 'chatgpt-shared': return Math.min(...Object.values(pricesIQD.chatgptShared));
     case 'chatgpt': return 12000;
     case 'freefire': return Math.min(...Object.values(pricesIQD.freefire));
     case 'pubg': return Math.min(...Object.values(pricesIQD.pubg));
@@ -262,11 +271,76 @@ function minPrice(productId){
   }
 }
 
+
+function adjustCatalog(){
+  // Remove unwanted services
+  state.products = state.products.filter(p=> !['svc-appprog'].includes(p.id));
+
+  // Remove duplicate ChatGPT items if we are going to show merged one in list
+  state.products = state.products.filter(p=> !['chatgpt-personal','chatgpt-shared'].includes(p.id));
+
+  // Ensure merged ChatGPT appears as a product card
+  const hasChatGPT = state.products.some(p=> p.id==='chatgpt');
+  if(!hasChatGPT){
+    state.products.push({
+      id:'chatgpt',
+      cat:'digital',
+      title_en:'ChatGPT',
+      title_ar:'شات جي بي تي',
+      image:'assets/chatgpt.png',
+      desc_en:'Personal & Shared accounts in one place',
+      desc_ar:'حسابات شخصية ومشتركة في مكان واحد',
+      options:[{key:'months', choices:[1,3,6,12]}]
+    });
+  }
+
+  // Reorder digital products by priority
+  const order = ['pubg','freefire','itunes','chatgpt','duolingo','adobecc','primevideo','netflix','minecraft'];
+  const priority = Object.fromEntries(order.map((id,i)=>[id,i]));
+  state.products.sort((a,b)=>{
+    if(a.cat!==b.cat){
+      return a.cat==='digital' ? -1 : b.cat==='digital' ? 1 : 0;
+    }
+    // within digital, apply priority
+    if(a.cat==='digital'){
+      const pa = (priority[a.id]!==undefined)? priority[a.id] : 999;
+      const pb = (priority[b.id]!==undefined)? priority[b.id] : 999;
+      if(pa!==pb) return pa-pb;
+    }
+    return 0;
+  });
+}
+
+// Localization helpers for option labels (Arabic durations & digits)
+function toArabicDigits(str){
+  if(state.lang!=='ar') return String(str);
+  const map = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+  return String(str).replace(/[0-9]/g, d=> map[d]);
+}
+function localizeDurationLabel(label){
+  if(state.lang!=='ar') return label;
+  // Normalize
+  let s = String(label).trim();
+  // Specific known labels
+  s = s.replace(/^1\s*Month$/i, 'شهر واحد')
+       .replace(/^3\s*Months$/i, '٣ شهور')
+       .replace(/^6\s*Months$/i, '٦ شهور')
+       .replace(/^1\s*Year$/i, 'سنة واحدة')
+       .replace(/^Forever$/i, 'مدى الحياة')
+       .replace(/^Membership\s*1\s*Month$/i, 'اشتراك شهر واحد')
+       .replace(/^Membership\s*3\s*Months$/i, 'اشتراك ٣ شهور')
+       .replace(/^Membership\s*12\s*Months$/i, 'اشتراك ١٢ شهر');
+  // Generic fallbacks like "12 Months", "2 Years"
+  s = s.replace(/^(\d+)\s*Months?$/i, (_,n)=> toArabicDigits(n)+' شهور')
+       .replace(/^(\d+)\s*Years?$/i, (_,n)=> toArabicDigits(n)+' سنة');
+  // Keep numeric denominations like "100" for diamonds/UC etc.
+  return s.replace(/\d+/g, toArabicDigits);
+}
 // --- Helpers ---
 function saveCart(){ localStorage.setItem('cart', JSON.stringify(state.cart)); }
 function setLang(l){ state.lang=l; localStorage.setItem('lang', l); document.documentElement.setAttribute('lang', l); document.documentElement.dir = (l==='ar'?'rtl':'ltr'); render(); }
 function navigate(route){ state.route = route; window.location.hash = route; render(); }
-window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',''); if(r){ state.route = r; render(); } });
+window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',''); if(r){ if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; } window.scrollTo(0,0); state.route = r; render(); } });
 
 function addToCart(id, selections){
   const p = state.products.find(x=>x.id===id);
@@ -325,11 +399,11 @@ function openItemModal(it){
   const m = document.getElementById('item-modal'); if(!m) return;
   m.classList.add('open');
   const sel = Object.entries(it.selections||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
-  document.getElementById('im-title').textContent = it.title || '';
-  document.getElementById('im-qty').textContent = 'x'+(it.qty||1);
-  document.getElementById('im-unit').textContent = it.unitPrice ? fmtIQD(it.unitPrice) : (state.lang==='ar'?'عند الطلب':'On request');
-  document.getElementById('im-sub').textContent = it.unitPrice ? fmtIQD(it.unitPrice*(it.qty||1)) : (state.lang==='ar'?'عند الطلب':'On request');
-  document.getElementById('im-sel').textContent = sel || '';
+  var imt=document.getElementById('im-title'); if(imt) imt.textContent = it.title || '';
+  var imq=document.getElementById('im-qty'); if(imq) imq.textContent = 'x'+(it.qty||1);
+  var imu=document.getElementById('im-unit'); if(imu) imu.textContent = it.unitPrice? fmtIQD(it.unitPrice) : (state.lang==='ar'?'عند الطلب':'On request');
+  var ims=document.getElementById('im-sub'); if(ims) ims.textContent = it.unitPrice? fmtIQD(it.unitPrice*(it.qty||1)) : '—';
+  var imsel=document.getElementById('im-sel'); if(imsel) imsel.textContent = sel || '';
   document.querySelectorAll('[data-close-modal]').forEach(b=> b.addEventListener('click', ()=> m.classList.remove('open')));
 }
 
@@ -442,19 +516,23 @@ function viewServices(inHome=false){
       </div>
       <a class="btn" href="#store">${t('goToStore')}</a>
     </div>
-    <div class="grid cards">${cards}</div>
+    <div class="grid cards mobile-two-col uniform-cards">${cards}</div>
   </section>`;
 }
 
 // --- Store cards now open a product detail page
+const FIT_IDS = ['office','xbox','chatgpt-personal','chatgpt-shared'];
 function productCard(p){
   const mp = minPrice(p.id);
   const title = productTitle(p);
   return `
   <div class="card" data-open="${p.id}">
-    <div class="img"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
+    <div class="img ${FIT_IDS.includes(p.id)?'fit':''}"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
     <div class="body">
       <strong>${title}</strong>
+        ${p.desc_en && state.lang==='en' ? `<p class="small">${p.desc_en}</p>` : ''}
+        ${p.desc_ar && state.lang==='ar' ? `<p class="small">${p.desc_ar}</p>` : ''}
+        <!--desc-injected-->
       ${mp ? `<div class="small">${t('price')}: ${fmtIQD(mp)} +</div>` : ''}
       <a class="btn accent block" href="#product/${p.id}">${t('view')}</a>
     </div>
@@ -473,7 +551,7 @@ function viewStore(){
       </div>
       <div class="tag">Images • ${t('price')} • ${t('view')}</div>
     </div>
-    <div class="grid cards">${goods}</div>
+    <div class="grid cards mobile-two-col uniform-cards">${goods}</div>
     <div class="section-title">
       <div>
         <div class="kicker">${t('store')}</div>
@@ -481,7 +559,7 @@ function viewStore(){
       </div>
       <div class="tag">${t('addDetails')}</div>
     </div>
-    <div class="grid cards">${services}</div>
+    <div class="grid cards mobile-two-col uniform-cards">${services}</div>
   </section>`;
 }
 
@@ -491,12 +569,52 @@ function viewProduct(id){
   const title = productTitle(p);
   const isService = p.cat==='service';
 
-  // Build choice buttons for goods; textarea for services
+  
+  // Merged ChatGPT special view
+  if(id==='chatgpt'){
+    const personalChoices = ['1 Month'];
+    const sharedChoices = ['1 Month','1 Year'];
+    function choiceGrid(idPrefix, prodId, choices){
+      const buttons = choices.map(c=>{
+        const price = priceFor(prodId, prodId==='chatgpt-personal'?{plan:c}:{plan:c});
+        return `<div class="choice" data-choice="${c}"><span>${localizeDurationLabel(c)}</span><span>${fmtIQD(price)}</span></div>`;
+      }).join('');
+      return `<div class="choice-grid" id="${idPrefix}">${buttons}</div>`;
+    }
+    const content = `
+      <div class="kicker">${state.lang==='ar'?'حسابات شخصية':'Personal Accounts'}</div>
+      ${choiceGrid('choices-chatgpt-personal','chatgpt-personal', personalChoices)}
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:10px">
+        <button class="btn accent" id="add-personal" disabled>${t('addToCart')}</button>
+      </div>
+      <hr style="opacity:.2;margin:14px 0">
+      <div class="kicker">${state.lang==='ar'?'حسابات مشتركة':'Shared Accounts'}</div>
+      ${choiceGrid('choices-chatgpt-shared','chatgpt-shared', sharedChoices)}
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:10px">
+        <button class="btn accent" id="add-shared" disabled>${t('addToCart')}</button>
+      </div>
+    `;
+    return `
+      <section class="container">
+        <div class="back-row">
+          <a class="btn ghost" href="#store">‹ ${t('back')}</a>
+        </div>
+        <div class="card">
+          <div class="img ${FIT_IDS.includes('chatgpt')?'fit':''}"><img src="assets/chatgpt.png" alt="ChatGPT"></div>
+          <div class="body">
+            <strong>${state.lang==='ar'?'شات جي بي تي':'ChatGPT'}</strong>
+            ${content}
+          </div>
+        </div>
+      </section>
+    `;
+  }
+// Build choice buttons for goods; textarea for services
   let content = '';
   if(isService){
     content = `
-      <label class="small">${t('notes')}</label>
-      <textarea class="opt" data-key="notes" rows="4" placeholder="Type here..."></textarea>
+      <label class="small">${state.lang==='ar' ? 'ملاحظات' : 'Notes'}</label>
+      <textarea class="opt" data-key="notes" rows="4" placeholder="${state.lang==='ar' ? 'اكتب مشكلتك وسأساعدك' : 'Type your problem and I will help you'}"></textarea>
       <button class="btn accent block" id="add-selected">${t('addToCart')}</button>
     `;
   }else{
@@ -506,7 +624,7 @@ function viewProduct(id){
       // compute price for this selection
       const selections = { [choiceKey]: c };
       const price = priceFor(p.id, selections);
-      return `<div class="choice" data-choice="${c}"><span>${p.id==='itunes'?('$' + c):(p.id==='freefire'?(c+' 💎'):c)}</span><span>${fmtIQD(price)}</span></div>`;
+      return `<div class="choice" data-choice="${c}"><span>${p.id==='pubg'||p.id==='freefire'?(toArabicDigits(c)+' ' + (p.id==='freefire'?'💎':'')):localizeDurationLabel(c)}</span><span>${fmtIQD(price)}</span></div>`;
     }).join('');
     content = `
       <div class="choice-grid" id="choices">${choiceButtons}</div>
@@ -522,9 +640,12 @@ function viewProduct(id){
       <a class="btn ghost" href="#store">‹ ${t('back')}</a>
     </div>
     <div class="card">
-      <div class="img"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
+      <div class="img ${FIT_IDS.includes(p.id)?'fit':''}"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
       <div class="body">
         <strong>${title}</strong>
+        ${p.desc_en && state.lang==='en' ? `<p class=\"small\">${p.desc_en}</p>` : ''}
+        ${p.desc_ar && state.lang==='ar' ? `<p class=\"small\">${p.desc_ar}</p>` : ''}
+        <!--desc-injected-->
         ${content}
       </div>
     </div>
@@ -547,11 +668,11 @@ function viewCart(){
       </td>
       <td>${i.unitPrice? fmtIQD(i.unitPrice): `<span class="small">${t('onRequest')}</span>`}</td>
       <td>
-        <button class="btn accent" data-qty="${i.id}|-1">-</button>
-        <span style="padding:0 8px">${i.qty}</span>
-        <button class="btn accent" data-qty="${i.id}|1">+</button>
+        <button class="btn accent" data-qty="${i.id}|-1" aria-label="Decrease quantity">-</button>
+        <span class="qty-value">${i.qty}</span>
+        <button class="btn accent" data-qty="${i.id}|1" aria-label="Increase quantity">+</button>
       </td>
-      <td>${i.unitPrice? fmtIQD(i.unitPrice * i.qty): '<span class="small">—</span>'}</td>
+      
       <td>
         <button class="bin-btn" title="${t('remove')}" data-remove="${i.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -574,8 +695,8 @@ function viewCart(){
     <div class="card">
       <div class="body">
         <table class="table">
-          <thead><tr><th>Item</th><th>${t('price')}</th><th>${t('quantity')}</th><th>${t('subtotal')}</th><th></th></tr></thead>
-          <tbody>${rows || `<tr><td colspan="5" class="small">${t('emptyCart')}</td></tr>`}</tbody>
+          <thead><tr><th>Item</th><th>${t('price')}</th><th>${t('quantity')}</th><th></th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="4" class="small">${t('emptyCart')}</td></tr>`}</tbody>
         </table>
         <div style="display:flex;gap:12px;justify-content:flex-end">
           <a class="btn ghost" href="#store">${t('continueShopping')}</a>
@@ -589,7 +710,6 @@ function viewCart(){
         <h3 id="im-title"></h3>
         <div class="row"><span class="small">${t('quantity')}</span><span id="im-qty"></span></div>
         <div class="row"><span class="small">${t('price')}</span><span id="im-unit"></span></div>
-        <div class="row"><span class="small">${t('subtotal')}</span><span id="im-sub"></span></div>
         <div class="row small" id="im-sel"></div>
         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
           <button class="btn" data-close-modal>Close</button>
@@ -807,7 +927,7 @@ function render(){
       if(e.target.closest('[data-remove]') || e.target.closest('[data-qty]')) return;
       const id = tr.getAttribute('data-item');
       const it = state.cart.find(x=>x.id===id);
-      if(it){ openItemModal(it); }
+      if(it && document.getElementById('item-modal')){ openItemModal(it); }
     });
   });
 
@@ -823,9 +943,9 @@ function render(){
       m.classList.add('open');
       document.getElementById('im-title').textContent = it.title;
       document.getElementById('im-qty').textContent = String(it.qty);
-      document.getElementById('im-unit').textContent = it.unitPrice? fmtIQD(it.unitPrice): (state.lang==='ar'? 'عند الطلب':'On request');
-      document.getElementById('im-sub').textContent = it.unitPrice? fmtIQD(it.unitPrice*it.qty): '—';
-      document.getElementById('im-sel').textContent = Object.entries(it.selections).map(([k,v])=>`${k}: ${v}`).join(', ');
+      var imu=document.getElementById('im-unit'); if(imu) imu.textContent = it.unitPrice? fmtIQD(it.unitPrice): (state.lang==='ar'? 'عند الطلب':'On request');
+      var ims=document.getElementById('im-sub'); if(ims) ims.textContent = it.unitPrice? fmtIQD(it.unitPrice*it.qty): '—';
+      var imsel=document.getElementById('im-sel'); if(imsel) imsel.textContent = Object.entries(it.selections||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
     });
   });
 
@@ -922,5 +1042,16 @@ if (document.readyState !== 'loading') { try { const r = location.hash.replace('
 
 document.addEventListener('DOMContentLoaded', ()=>{
   if(!localStorage.getItem('lang')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('lang','ar'); } else { localStorage.setItem('lang','en'); } }catch(e){} }
-  const r = location.hash.replace('#',''); state.route = r || 'home'; render();
+  const r = location.hash.replace('#',''); state.route = r || 'home'; adjustCatalog();render();
 });
+
+
+function mapEmbed(){
+  const online = (typeof navigator!=='undefined' && navigator.onLine);
+  if(!online){
+    return `<div class="card"><div class="body"><strong>Map unavailable offline</strong><p class="small">Connect to the internet to load the map.</p></div></div>`;
+  }
+  // Simple Google Maps embed iframe (Najaf, Iraq)
+  const src = "https://www.google.com/maps?q=Najaf%2C%20Iraq&output=embed";
+  return `<iframe class="iframe-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}" width="100%" height="240" style="border:0;" allowfullscreen></iframe>`;
+}
