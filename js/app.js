@@ -678,7 +678,7 @@ function viewProduct(id){
       // compute price for this selection
       const selections = { [choiceKey]: c };
       const price = priceFor(p.id, selections);
-      return `<div class="choice" data-choice="${c}"><span>${p.id==='pubg'||p.id==='freefire'?(toArabicDigits(c)+' ' + (p.id==='freefire'?'💎':'')):localizeDurationLabel(c)}</span><span>${fmtIQD(price)}</span></div>`;
+      return `<div class="choice" data-choice="${c}"><span>${(choiceKey==="amount" || p.id==="itunes") ? ("$" + String(c)) : localizeDurationLabel(c)}</span><span>${fmtIQD(price)}</span></div>`;
     }).join('');
     content = `
       <div class="choice-grid" id="choices">${choiceButtons}</div>
