@@ -583,3 +583,47 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
   75%  { transform: translate(-50%, -50%) scale(1.05); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0); }
 }
+
+
+
+/* === Accessibility & small-screen button sizing tweaks (patched) === */
+.btn{
+  min-height: 44px; /* iOS recommended touch target */
+  padding: 10px 12px;
+  line-height: 1.2;
+  white-space: normal;           /* allow wrapping */
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Choice chips should allow text wrapping and avoid overflow */
+.choice{
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.choice span:first-child{
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+/* Ensure grid doesn’t squeeze chips on narrow screens */
+@media (max-width: 414px){
+  .choice-grid{
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+  }
+  .btn{
+    font-size: 14px;
+    padding: 12px 14px;
+    min-height: 46px;
+  }
+}
+
+/* Very small screens (older iPhones like SE/5s width <= 320px) */
+@media (max-width: 360px){
+  .choice-grid{
+    grid-template-columns: 1fr;
+  }
+}

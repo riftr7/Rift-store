@@ -641,15 +641,15 @@ function viewProduct(id){
               <div style="flex:1;min-width:0">
                 <div class="kicker">${state.lang==='ar'?'حساب شخصي':'Personal Accounts'}</div>
                 <div id="choices-chatgpt-personal" class="choice-grid" style="margin-top:8px">
-                  <div class="choice" data-choice="personal-1m">1 Month — ${pricePersonal1M}</div>
+                  <div class="choice" data-choice="personal-1m">${localizeDurationLabel("1 Month")} — ${pricePersonal1M}</div>
                 </div>
               </div>
               <div style="width:1px;height:auto;background:rgba(255,255,255,.1)"></div>
               <div style="flex:1;min-width:0">
                 <div class="kicker">${state.lang==='ar'?'حساب مشترك':'Shared Accounts'}</div>
                 <div id="choices-chatgpt-shared" class="choice-grid" style="margin-top:8px">
-                  <div class="choice" data-choice="shared-1m">1 Month — ${priceShared1M}</div>
-                  <div class="choice" data-choice="shared-1y">1 Year — ${priceShared1Y}</div>
+                  <div class="choice" data-choice="shared-1m">${localizeDurationLabel("1 Month")} — ${priceShared1M}</div>
+                  <div class="choice" data-choice="shared-1y">${localizeDurationLabel("1 Year")} — ${priceShared1Y}</div>
                 </div>
               </div>
             </div>
