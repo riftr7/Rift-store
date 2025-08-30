@@ -688,3 +688,36 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 @media (max-width: 360px){
   .choice-grid{ grid-template-columns: 1fr; }
 }
+
+
+
+/* === PATCH v3: Arabic/mobile readability for choice chips === */
+
+/* On small screens, especially in RTL/Arabic, use single-column chips so text never squeezes */
+@media (max-width: 414px){
+  [dir="rtl"] .choice-grid{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Make the price sit on its own line under the label on narrow screens */
+@media (max-width: 414px){
+  .choice{
+    align-items: flex-start;
+  }
+  .choice span:first-child{
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .choice span:last-child{
+    display: block;
+    width: 100%;
+    opacity: .9;
+  }
+}
+
+/* Slightly bump Arabic chip font sizes for legibility */
+[dir="rtl"] .choice{
+  font-size: 16px;
+}
