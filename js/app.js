@@ -137,7 +137,7 @@ const state = {
     { id:'shahid', cat:'digital', title_en:'Shahid VIP', title_ar:'شاهد VIP', image:'assets/shahid.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
     { id:'disneyplus', cat:'digital', title_en:'Disney+', title_ar:'ديزني+', image:'assets/disneyplus.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
     { id:'capcut', cat:'digital', title_en:'CapCut Pro', title_ar:'كاب كت برو', image:'assets/capcut\.jpeg', options:[{key:'term', choices:['1 Month','1 Year']}] },
-{ id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100]}] },
+{ id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100,500]}] },
         { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire\.jpeg', options:[{key:'diamonds', choices:[100]}] },
     { id:'pubg', cat:'digital', title_en:'PUBG Mobile UC', title_ar:'شدات ببجي موبايل', image:'assets/pubg\.jpg', options:[{key:'uc', choices:[60,325,660,1800,3850,8100,16000,24300,32400,40500]}] },
     { id:'xbox', cat:'digital', title_en:'Xbox (Membership / Gift Cards)', title_ar:'اكس بوكس (اشتراك/بطاقات)', image:'assets/xbox\.png', options:[{key:'type', choices:['Membership 1 Month','Membership 3 Months','Membership 12 Months','$10','$15','$20']}] },
@@ -149,36 +149,36 @@ const state = {
     { id:'perplexity', cat:'digital', title_en:'Perplexity Pro', title_ar:'بيربلكسيتي برو', image:'assets/perplexity\.png', options:[{key:'term', choices:['1 Year']}] },
 
     // Services
-    { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر', image:'assets/pcopt.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-mobile', cat:'service', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-cloud', cat:'service', title_en:'Cloud Accounts', title_ar:'حسابات سحابية', image:'assets/cloud.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-webprog', cat:'service', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/apps.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/appprog\.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programs.png', options:[{key:'notes', textarea:true}] },
+    { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر', image:'assets/pc.jpg', options:[{key:'notes', textarea:true}] },
+    { id:'svc-mobile', cat:'service', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.jpg', options:[{key:'notes', textarea:true}] },
+    { id:'svc-cloud', cat:'service', title_en:'Cloud Accounts', title_ar:'حسابات سحابية', image:'assets/cloud.jpg', options:[{key:'notes', textarea:true}] },
+    { id:'svc-webprog', cat:'service', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/website-programming.png', options:[{key:'notes', textarea:true}] },
+    { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif', options:[{key:'notes', textarea:true}] },
+    { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif', options:[{key:'notes', textarea:true}] },
+    { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg', options:[{key:'notes', textarea:true}] },
 
   ],
   
 services: [
-    {key:'pc-opt', title_en:'PC Optimization', title_ar:'تحسين الكمبيوتر', image:'assets/pcopt.png',
+    {key:'pc-opt', title_en:'PC Optimization', title_ar:'تحسين الكمبيوتر', image:'assets/pc.jpg',
       desc_en:'Deep clean, boot speedup, driver updates, stability fixes.',
       desc_ar:'تنظيف عميق، تسريع الإقلاع، تحديث التعريفات، إصلاح الاستقرار.'},
-    {key:'mobile', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.png',
+    {key:'mobile', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.jpg',
       desc_en:'Repairs, optimization, backups, transfer, security.',
       desc_ar:'صيانة، تحسين، نسخ احتياطي، نقل، أمان.'},
-    {key:'webprog', title_en:'Website Programming', title_ar:'برمجة مواقع',
+    {key:'webprog', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/website-programming.png',
       desc_en:'Custom websites, landing pages, stores.',
       desc_ar:'مواقع مخصصة، صفحات هبوط، متاجر.'},
-    {key:'appprog', title_en:'App Programming', title_ar:'برمجة تطبيقات',
+    {key:'appprog', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif',
       desc_en:'Mobile/desktop app development on request.',
       desc_ar:'تطوير تطبيقات موبايل أو سطح المكتب عند الطلب.'},
-    {key:'cloud', title_en:'Cloud Accounts', title_ar:'حسابات سحابية',
+    {key:'cloud', title_en:'Cloud Accounts', image:'assets/cloud.jpg', title_ar:'حسابات سحابية',
       desc_en:'Setup, recovery, storage, security.',
       desc_ar:'إعداد، استرجاع، تخزين، أمان.'},
-    {key:'apps', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.png',
+    {key:'apps', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif',
       desc_en:'Install, configure, and update essential apps.',
       desc_ar:'تثبيت وإعداد وتحديث التطبيقات.'},
-    {key:'programs', title_en:'Programs', title_ar:'البرامج', image:'assets/programs.png',
+    {key:'programs', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg',
       desc_en:'Custom scripts, automation, small web tools.',
       desc_ar:'سكربتات مخصصة، أتمتة، أدوات ويب صغيرة.'}
   ]
@@ -233,12 +233,11 @@ function priceFor(productId, selections){
     case 'office': return pricesIQD.office[selections.version]||0;
     case 'perplexity': return pricesIQD.perplexity[selections.term]||0;
     case 'chatgpt': {
-      const m = Number(selections.months);
-      if(m===1) return 12000;
-      if(m===3) return 20000;
-      if(m===6) return 35000;
-      if(m===12) return 55000;
-      return 0;
+      // type-aware (Personal or Shared) using original price tables
+      var type = (selections && selections.type)||'Shared';
+      var plan = (selections && selections.plan)||'1 Month';
+      if(type==='Personal'){ return pricesIQD.chatgptPersonal[plan]||0; }
+      return pricesIQD.chatgptShared[plan]||0;
     }
     case 'freefire': return pricesIQD.freefire[Number(selections.diamonds)]||0;
     case 'pubg': return pricesIQD.pubg[Number(selections.uc)]||0;
@@ -313,10 +312,18 @@ function adjustCatalog(){
 
 // Localization helpers for option labels (Arabic durations & digits)
 function toArabicDigits(str){
-  if(state.lang!=='ar') return String(str);
-  const map = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
-  return String(str).replace(/[0-9]/g, d=> map[d]);
-}
+  // Force Latin (English) digits regardless of locale
+  try {
+    var str = String(arguments[0]);
+    var map = {
+      '٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9',
+      '۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9'
+    };
+    return str.replace(/[٠-٩۰-۹]/g, function(d){ return map[d] || d; });
+  } catch(e) {
+    return String(arguments[0]);
+  }
+};
 function localizeDurationLabel(label){
   if(state.lang!=='ar') return label;
   // Normalize
@@ -342,14 +349,57 @@ function setLang(l){ state.lang=l; localStorage.setItem('lang', l); document.doc
 function navigate(route){ state.route = route; window.location.hash = route; render(); }
 window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',''); if(r){ if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; } window.scrollTo(0,0); state.route = r; render(); } });
 
+
+
+
+
+// --- Added-to-cart animation: centered jelly bubble (subtle aesthetic) ---
+function triggerAddToCartAnimation(){
+  try{
+    var bubble = document.createElement('div');
+    bubble.textContent = (state.lang==='ar' ? 'تمت الإضافة' : 'Added');
+    // Softer, aesthetic inline styling
+    bubble.setAttribute('style', [
+      'position:fixed',
+      'left:50%',
+      'top:50%',
+      'transform:translate(-50%,-50%)',
+      'z-index:999999',
+      'background: linear-gradient(135deg, var(--brand), #34d399)',
+      'color:#081017',
+      'font-weight:800',
+      'font-size:14px',
+      'letter-spacing:.2px',
+      'padding:10px 16px',
+      'border-radius:999px',
+      'border:1px solid rgba(255,255,255,.08)',
+      'box-shadow: 0 10px 30px rgba(0,0,0,.25)',
+      'backdrop-filter: blur(6px)',
+      'pointer-events:none',
+      'will-change: transform, opacity'
+    ].join(';'));
+    document.body.appendChild(bubble);
+    try{
+      var anim = bubble.animate([
+        { opacity:0, transform:'translate(-50%,-50%) scale(0.92)' },
+        { opacity:1, transform:'translate(-50%,-50%) scale(1.04)' },
+        { opacity:1, transform:'translate(-50%,-50%) scale(0.99)' },
+        { opacity:0.98, transform:'translate(-50%,-50%) scale(1.00)' },
+        { opacity:0, transform:'translate(-50%,-50%) scale(1.00)' }
+      ], { duration: 1700, easing: 'cubic-bezier(.22,1,.36,1)' }); // smooth ease-out
+      anim.onfinish = function(){ bubble.remove(); };
+      setTimeout(function(){ try{ bubble.remove(); }catch(e){} }, 2000);
+    }catch(e){
+      setTimeout(function(){ try{ bubble.remove(); }catch(e){} }, 1900);
+    }
+  }catch(e){}
+}
 function addToCart(id, selections){
   const p = state.products.find(x=>x.id===id);
   if(!p) return;
   const unitPrice = priceFor(id, selections);
   state.cart.push({ id: uid(), productId:id, title: productTitle(p), selections, unitPrice, qty:1, image:p.image, cat:p.cat });
-  saveCart();
-  alert(state.lang==='ar'?'تمت الإضافة إلى السلة':'Added to cart');
-  
+triggerAddToCartAnimation();
   // Checkout validation
   const phoneEl = document.getElementById('phone');
   const cityEl = document.getElementById('city');
@@ -572,28 +622,11 @@ function viewProduct(id){
   
   // Merged ChatGPT special view
   if(id==='chatgpt'){
-    const personalChoices = ['1 Month'];
-    const sharedChoices = ['1 Month','1 Year'];
-    function choiceGrid(idPrefix, prodId, choices){
-      const buttons = choices.map(c=>{
-        const price = priceFor(prodId, prodId==='chatgpt-personal'?{plan:c}:{plan:c});
-        return `<div class="choice" data-choice="${c}"><span>${localizeDurationLabel(c)}</span><span>${fmtIQD(price)}</span></div>`;
-      }).join('');
-      return `<div class="choice-grid" id="${idPrefix}">${buttons}</div>`;
-    }
-    const content = `
-      <div class="kicker">${state.lang==='ar'?'حسابات شخصية':'Personal Accounts'}</div>
-      ${choiceGrid('choices-chatgpt-personal','chatgpt-personal', personalChoices)}
-      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:10px">
-        <button class="btn accent" id="add-personal" disabled>${t('addToCart')}</button>
-      </div>
-      <hr style="opacity:.2;margin:14px 0">
-      <div class="kicker">${state.lang==='ar'?'حسابات مشتركة':'Shared Accounts'}</div>
-      ${choiceGrid('choices-chatgpt-shared','chatgpt-shared', sharedChoices)}
-      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:10px">
-        <button class="btn accent" id="add-shared" disabled>${t('addToCart')}</button>
-      </div>
-    `;
+    // Side-by-side sections with price buttons; single Add button
+    const pricePersonal1M = fmtIQD(priceFor('chatgpt', { type:'Personal', plan:'1 Month' }));
+    const priceShared1M   = fmtIQD(priceFor('chatgpt', { type:'Shared',  plan:'1 Month' }));
+    const priceShared1Y   = fmtIQD(priceFor('chatgpt', { type:'Shared',  plan:'1 Year'  }));
+
     return `
       <section class="container">
         <div class="back-row">
@@ -603,12 +636,33 @@ function viewProduct(id){
           <div class="img ${FIT_IDS.includes('chatgpt')?'fit':''}"><img src="assets/chatgpt.png" alt="ChatGPT"></div>
           <div class="body">
             <strong>${state.lang==='ar'?'شات جي بي تي':'ChatGPT'}</strong>
-            ${content}
+
+            <div style="display:flex;gap:24px;align-items:flex-start;margin-top:10px">
+              <div style="flex:1;min-width:0">
+                <div class="kicker">${state.lang==='ar'?'حساب شخصي':'Personal Accounts'}</div>
+                <div id="choices-chatgpt-personal" class="choice-grid" style="margin-top:8px">
+                  <div class="choice" data-choice="personal-1m">1 Month — ${pricePersonal1M}</div>
+                </div>
+              </div>
+              <div style="width:1px;height:auto;background:rgba(255,255,255,.1)"></div>
+              <div style="flex:1;min-width:0">
+                <div class="kicker">${state.lang==='ar'?'حساب مشترك':'Shared Accounts'}</div>
+                <div id="choices-chatgpt-shared" class="choice-grid" style="margin-top:8px">
+                  <div class="choice" data-choice="shared-1m">1 Month — ${priceShared1M}</div>
+                  <div class="choice" data-choice="shared-1y">1 Year — ${priceShared1Y}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:14px">
+              <button class="btn accent" id="add-chatgpt" disabled>${t('addToCart')}</button>
+            </div>
           </div>
         </div>
       </section>
     `;
   }
+
 // Build choice buttons for goods; textarea for services
   let content = '';
   if(isService){
@@ -748,7 +802,7 @@ function viewCheckout(){
 function invoiceText(){
   const id = Math.random().toString(36).slice(2,10).toUpperCase();
   const now = new Date();
-  const date = now.toLocaleString();
+  const date = now.toLocaleString('en-US');
   const phone = (state.invoiceDetails && state.invoiceDetails.phone) || '';
   const city = (state.invoiceDetails && state.invoiceDetails.city) || '';
   const lines = [];
@@ -884,6 +938,50 @@ function render(){
   });
 
   // Product detail choices
+/* ChatGPT price-choice bindings (single Add) */
+(function(){
+  if(state.route !== 'product/chatgpt') return;
+  var personal = document.getElementById('choices-chatgpt-personal');
+  var shared   = document.getElementById('choices-chatgpt-shared');
+  var addBtn   = document.getElementById('add-chatgpt');
+  var picked   = null;
+
+  function clearAll(){
+    [personal, shared].forEach(function(w){
+      if(!w) return;
+      w.querySelectorAll('.choice').forEach(function(x){ x.classList.remove('active'); });
+    });
+  }
+  function bindWrap(wrap){
+    if(!wrap) return;
+    wrap.querySelectorAll('.choice').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        clearAll();
+        btn.classList.add('active');
+        picked = btn.getAttribute('data-choice'); // personal-1m | shared-1m | shared-1y
+        if(addBtn) addBtn.removeAttribute('disabled');
+      });
+    });
+  }
+  bindWrap(personal);
+  bindWrap(shared);
+
+  if(addBtn){
+    addBtn.addEventListener('click', function(){
+      if(!picked) return;
+      var sel;
+      if(picked === 'personal-1m'){ sel = { type:'Personal', plan:'1 Month' }; }
+      else if(picked === 'shared-1m'){ sel = { type:'Shared', plan:'1 Month' }; }
+      else if(picked === 'shared-1y'){ sel = { type:'Shared', plan:'1 Year' }; }
+      else { return; }
+      addToCart('chatgpt', sel);
+    });
+  }
+})();
+
+
+
+
   const choices = document.getElementById('choices');
   let selectedChoice = null;
   if(choices){
@@ -916,62 +1014,7 @@ function render(){
     });
   }
 
-  
-  // ChatGPT merged product handlers
-  try {
-    if (state.route.startsWith('product/') && state.route.split('/')[1] === 'chatgpt') {
-      const pGrid = document.getElementById('choices-chatgpt-personal');
-      const sGrid = document.getElementById('choices-chatgpt-shared');
-      let selPersonal = null, selShared = null;
-
-      function bindGrid(grid, onSelect){
-        if(!grid) return;
-        grid.querySelectorAll('.choice').forEach(btn=>{
-          btn.addEventListener('click', ()=>{
-            grid.querySelectorAll('.choice').forEach(x=> x.classList.remove('active'));
-            btn.classList.add('active');
-            onSelect(btn.getAttribute('data-choice'));
-            const addBtn = document.getElementById('add-personal-shared');
-            if(addBtn) addBtn.removeAttribute('disabled');
-          });
-        });
-      }
-
-      // replace two separate buttons with one (if present)
-      let addUnified = document.getElementById('add-personal-shared');
-      if(!addUnified){
-        const ap = document.getElementById('add-personal');
-        const as = document.getElementById('add-shared');
-        const host = (as && as.parentElement) || (ap && ap.parentElement);
-        if(host){
-          host.innerHTML = '<button class="btn accent" id="add-personal-shared" disabled>' + t('addToCart') + '</button>';
-          addUnified = document.getElementById('add-personal-shared');
-        }
-      }
-
-      bindGrid(pGrid, (c)=>{ selPersonal = c; });
-      bindGrid(sGrid, (c)=>{ selShared = c; });
-
-      if(addUnified){
-        addUnified.addEventListener('click', ()=>{
-          // priority: whichever selection the user last tapped
-          let prodId = null, selections = null;
-          if (sGrid && sGrid.querySelector('.choice.active')) {
-            prodId = 'chatgpt-shared';
-            selections = { plan: sGrid.querySelector('.choice.active').getAttribute('data-choice') };
-          } else if (pGrid && pGrid.querySelector('.choice.active')) {
-            prodId = 'chatgpt-personal';
-            selections = { plan: pGrid.querySelector('.choice.active').getAttribute('data-choice') };
-          }
-          if(prodId && selections){
-            addToCart(prodId, selections);
-            navigate('cart');
-          }
-        });
-      }
-    }
-  } catch(_e){ /* no-op */ }
-// Cart bindings
+  // Cart bindings
   document.querySelectorAll('[data-remove]').forEach(btn=> btn.addEventListener('click', ()=> removeFromCart(btn.getAttribute('data-remove'))));
   document.querySelectorAll('[data-qty]').forEach(btn=> btn.addEventListener('click', ()=>{
     const [id,delta] = btn.getAttribute('data-qty').split('|'); changeQty(id, Number(delta));
@@ -1110,10 +1153,3 @@ function mapEmbed(){
   const src = "https://www.google.com/maps?q=Najaf%2C%20Iraq&output=embed";
   return `<iframe class="iframe-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}" width="100%" height="240" style="border:0;" allowfullscreen></iframe>`;
 }
-
-// Disable pinch-zoom and ctrl+wheel zoom
-try {
-  window.addEventListener('wheel', function(e){ if(e.ctrlKey){ e.preventDefault(); } }, {passive:false});
-  window.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
-} catch(_e){}
-

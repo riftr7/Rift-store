@@ -554,11 +554,32 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 .bin-btn:hover{ background: rgba(225,29,72,0.16); }
 
 
-/* Hide scrollbars */
-* { scrollbar-width: none; }
-*::-webkit-scrollbar { width: 0px; height: 0px; display: none; }
-/* Reduce overscroll effects */
-html, body { overscroll-behavior: contain; touch-action: manipulation; }
-/* Prevent text-size adjust side effects on iOS */
-html { -webkit-text-size-adjust: 100%; }
+  20%{ opacity:1; transform: translateY(0); }
+  70%{ opacity:1; }
+  100%{ opacity:0; transform: translateY(-8px); }
+}
 
+
+/* Centered jelly bubble for "Added" */
+.added-bubble{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: var(--brand);
+  color: #0b0e13;
+  font-weight: 900;
+  padding: 12px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  animation: jelly-pop 1.4s ease-in-out forwards;
+}
+@keyframes jelly-pop{
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  50%  { transform: translate(-50%, -50%) scale(0.95); }
+  75%  { transform: translate(-50%, -50%) scale(1.05); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0); }
+}
