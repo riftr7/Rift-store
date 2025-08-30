@@ -137,7 +137,7 @@ const state = {
     { id:'shahid', cat:'digital', title_en:'Shahid VIP', title_ar:'شاهد VIP', image:'assets/shahid.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
     { id:'disneyplus', cat:'digital', title_en:'Disney+', title_ar:'ديزني+', image:'assets/disneyplus.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
     { id:'capcut', cat:'digital', title_en:'CapCut Pro', title_ar:'كاب كت برو', image:'assets/capcut\.jpeg', options:[{key:'term', choices:['1 Month','1 Year']}] },
-{ id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100,500]}] },
+{ id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100]}] },
         { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire\.jpeg', options:[{key:'diamonds', choices:[100]}] },
     { id:'pubg', cat:'digital', title_en:'PUBG Mobile UC', title_ar:'شدات ببجي موبايل', image:'assets/pubg\.jpg', options:[{key:'uc', choices:[60,325,660,1800,3850,8100,16000,24300,32400,40500]}] },
     { id:'xbox', cat:'digital', title_en:'Xbox (Membership / Gift Cards)', title_ar:'اكس بوكس (اشتراك/بطاقات)', image:'assets/xbox\.png', options:[{key:'type', choices:['Membership 1 Month','Membership 3 Months','Membership 12 Months','$10','$15','$20']}] },
@@ -916,7 +916,62 @@ function render(){
     });
   }
 
-  // Cart bindings
+  
+  // ChatGPT merged product handlers
+  try {
+    if (state.route.startsWith('product/') && state.route.split('/')[1] === 'chatgpt') {
+      const pGrid = document.getElementById('choices-chatgpt-personal');
+      const sGrid = document.getElementById('choices-chatgpt-shared');
+      let selPersonal = null, selShared = null;
+
+      function bindGrid(grid, onSelect){
+        if(!grid) return;
+        grid.querySelectorAll('.choice').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            grid.querySelectorAll('.choice').forEach(x=> x.classList.remove('active'));
+            btn.classList.add('active');
+            onSelect(btn.getAttribute('data-choice'));
+            const addBtn = document.getElementById('add-personal-shared');
+            if(addBtn) addBtn.removeAttribute('disabled');
+          });
+        });
+      }
+
+      // replace two separate buttons with one (if present)
+      let addUnified = document.getElementById('add-personal-shared');
+      if(!addUnified){
+        const ap = document.getElementById('add-personal');
+        const as = document.getElementById('add-shared');
+        const host = (as && as.parentElement) || (ap && ap.parentElement);
+        if(host){
+          host.innerHTML = '<button class="btn accent" id="add-personal-shared" disabled>' + t('addToCart') + '</button>';
+          addUnified = document.getElementById('add-personal-shared');
+        }
+      }
+
+      bindGrid(pGrid, (c)=>{ selPersonal = c; });
+      bindGrid(sGrid, (c)=>{ selShared = c; });
+
+      if(addUnified){
+        addUnified.addEventListener('click', ()=>{
+          // priority: whichever selection the user last tapped
+          let prodId = null, selections = null;
+          if (sGrid && sGrid.querySelector('.choice.active')) {
+            prodId = 'chatgpt-shared';
+            selections = { plan: sGrid.querySelector('.choice.active').getAttribute('data-choice') };
+          } else if (pGrid && pGrid.querySelector('.choice.active')) {
+            prodId = 'chatgpt-personal';
+            selections = { plan: pGrid.querySelector('.choice.active').getAttribute('data-choice') };
+          }
+          if(prodId && selections){
+            addToCart(prodId, selections);
+            navigate('cart');
+          }
+        });
+      }
+    }
+  } catch(_e){ /* no-op */ }
+// Cart bindings
   document.querySelectorAll('[data-remove]').forEach(btn=> btn.addEventListener('click', ()=> removeFromCart(btn.getAttribute('data-remove'))));
   document.querySelectorAll('[data-qty]').forEach(btn=> btn.addEventListener('click', ()=>{
     const [id,delta] = btn.getAttribute('data-qty').split('|'); changeQty(id, Number(delta));
@@ -1055,3 +1110,10 @@ function mapEmbed(){
   const src = "https://www.google.com/maps?q=Najaf%2C%20Iraq&output=embed";
   return `<iframe class="iframe-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}" width="100%" height="240" style="border:0;" allowfullscreen></iframe>`;
 }
+
+// Disable pinch-zoom and ctrl+wheel zoom
+try {
+  window.addEventListener('wheel', function(e){ if(e.ctrlKey){ e.preventDefault(); } }, {passive:false});
+  window.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
+} catch(_e){}
+

@@ -552,3 +552,13 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 /* Red trash (bin) button */
 .bin-btn{ color:#e11d48; background: rgba(225,29,72,0.08); border:1px solid rgba(225,29,72,0.15); }
 .bin-btn:hover{ background: rgba(225,29,72,0.16); }
+
+
+/* Hide scrollbars */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { width: 0px; height: 0px; display: none; }
+/* Reduce overscroll effects */
+html, body { overscroll-behavior: contain; touch-action: manipulation; }
+/* Prevent text-size adjust side effects on iOS */
+html { -webkit-text-size-adjust: 100%; }
+
