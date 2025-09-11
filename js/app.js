@@ -796,7 +796,6 @@ function viewCart(){
         </table>
         <div style="display:flex;gap:12px;justify-content:flex-end">
           <a class="btn ghost" href="#store">${t('continueShopping')}</a>
-          <a class="btn ghost" href="#previous-invoices">Previous Invoices</a>
           <button class="btn accent" id="checkout" ${state.cart.length? '' : 'disabled'}>${t('checkout')}</button>
         </div>
       </div>
@@ -870,10 +869,6 @@ function invoiceText(){
   lines.push(`${t('invoiceGrandTotal')}: ${fmtIQD(cartTotal())}`);
   lines.push(`${t('sendToBotNote')} @${BOT_USERNAME}.`);
   const text = lines.join('\n');
-  // Save invoice
-  const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
-  invoices.push({ id, text, date: now.toISOString() });
-  localStorage.setItem('invoices', JSON.stringify(invoices));
   return text;
 }
 
@@ -893,7 +888,7 @@ function viewInvoice(){
     </div>
     <div class="card">
       <div class="body">
-        <textarea id="invoice-text" rows="10">${text}</textarea>
+        <textarea id="invoice-text" rows="10" readonly>${text}</textarea>
         <div style="display:flex;gap:12px;justify-content:flex-end">
           <button class="btn accent" id="copy-invoice">${t('copyInvoice')}</button>
           <a class="btn accent" id="open-telegram" href="${tgLink}" target="_blank" rel="noopener">${t('openTelegram')}</a>
@@ -904,41 +899,7 @@ function viewInvoice(){
   </section>`;
 }
 
-function viewPreviousInvoices(){
-  const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
-  const list = invoices.map(inv => {
-    const encoded = encodeURIComponent(inv.text);
-    const tgLink = `https://t.me/${BOT_USERNAME}?text=${encoded}`;
-    return `
-    <div class="card" data-invoice-id="${inv.id}">
-      <div class="body">
-        <div class="small">Invoice #${inv.id} - ${new Date(inv.date).toLocaleString()}</div>
-        <textarea rows="5">${inv.text}</textarea>
-        <div style="display:flex;gap:12px;justify-content:flex-end">
-          <button class="btn accent copy-inv" data-text="${encoded}">Copy</button>
-          <a class="btn accent" href="${tgLink}" target="_blank" rel="noopener">Telegram</a>
-          <button class="bin-btn delete-inv" title="Delete" data-id="${inv.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
-              <path d="M10 11v6M14 11v6"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    `;
-  }).join('');
-  return `
-  <section class="container">
-    <div class="section-title">
-      <div>
-        <div class="kicker">Invoices</div>
-        <h2>Previous Invoices</h2>
-      </div>
-    </div>
-    ${list || '<p class="small">No previous invoices.</p>'}
-  </section>`;
-}
+
 
 function viewAbout(){ return `<section class="container"><h2>${t('about')} ${t('brand')}</h2><p class="small">Digital goods and services with clear pricing and a clean experience.</p></section>`; }
 
@@ -976,7 +937,6 @@ function render(){
     case 'cart': main = viewCart(); break;
     case 'checkout': main = viewCheckout(); break;
     case 'invoice': main = viewInvoice(); break;
-    case 'previous-invoices': main = viewPreviousInvoices(); break;
     case 'about': main = viewAbout(); break;
     case 'contact': main = viewContact(); break;
     default: main = viewHome();
@@ -1179,22 +1139,7 @@ function render(){
     });
   }
 
-  document.querySelectorAll('.copy-inv').forEach(btn=> btn.addEventListener('click', async ()=>{
-    const txt = btn.getAttribute('data-text');
-    try{
-      await navigator.clipboard.writeText(decodeURIComponent(txt));
-      btn.textContent = state.lang==='ar'?'تم النسخ!':'Copied!';
-      setTimeout(()=> btn.textContent='Copy', 1200);
-    }catch(e){ alert('Copy failed: ' + e.message); }
-  }));
 
-  document.querySelectorAll('.delete-inv').forEach(btn=> btn.addEventListener('click', ()=>{
-    const id = btn.getAttribute('data-id');
-    const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
-    const updated = invoices.filter(inv => inv.id !== id);
-    localStorage.setItem('invoices', JSON.stringify(updated));
-    render(); // re-render to update the view
-  }));
 
 
 
