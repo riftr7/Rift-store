@@ -31,7 +31,7 @@ const i18n = {
     contact: 'Contact',
     cart: 'Cart',
     welcome: 'Welcome to Rift',
-    heroLine: 'Secure. Professional. Trusted.',
+    heroLine: 'Professional. Trusted. Secure.',
     exploreServices: 'Explore Services',
     whatWeDo: 'What we do',
     goToStore: 'Go to Store',
@@ -78,7 +78,7 @@ const i18n = {
     contact: 'تواصل',
     cart: 'السلة',
     welcome: 'مرحباً بك في ريفت',
-    heroLine: 'آمن. احترافي. موثوق.',
+    heroLine: 'احترافي. موثوق. آمن.',
     exploreServices: 'استكشف الخدمات',
     whatWeDo: 'ماذا نقدم',
     goToStore: 'اذهب للمتجر',
@@ -138,7 +138,7 @@ const state = {
     { id:'disneyplus', cat:'digital', title_en:'Disney+', title_ar:'ديزني+', image:'assets/disneyplus.png', options:[{key:'term', choices:['1 Month','1 Year']}] },
     { id:'capcut', cat:'digital', title_en:'CapCut Pro', title_ar:'كاب كت برو', image:'assets/capcut\.jpeg', options:[{key:'term', choices:['1 Month','1 Year']}] },
 { id:'itunes', cat:'digital', title_en:'iTunes Gift Cards', title_ar:'بطاقات iTunes', image:'assets/itunes\.png', options:[{key:'amount', choices:[2,3,4,5,10,15,20,25,30,40,50,60,100,500]}] },
-        { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire\.jpeg', options:[{key:'diamonds', choices:[100]}] },
+    { id:'freefire', cat:'digital', title_en:'Free Fire Diamonds', title_ar:'ماسات Free Fire', image:'assets/freefire\.jpeg', options:[{key:'diamonds', choices:[100,210,350,1080,2200]}] },
     { id:'pubg', cat:'digital', title_en:'PUBG Mobile UC', title_ar:'شدات ببجي موبايل', image:'assets/pubg\.jpg', options:[{key:'uc', choices:[60,325,660,1800,3850,8100,16000,24300,32400,40500]}] },
     { id:'xbox', cat:'digital', title_en:'Xbox (Membership / Gift Cards)', title_ar:'اكس بوكس (اشتراك/بطاقات)', image:'assets/xbox\.png', options:[{key:'type', choices:['Membership 1 Month','Membership 3 Months','Membership 12 Months','$10','$15','$20']}] },
     { id:'minecraft', cat:'digital', title_en:'Minecraft Minecoins', title_ar:'Minecoins ماينكرافت', image:'assets/minecraft\.jpg', options:[{key:'minecoins', choices:[3500]}] },
@@ -149,13 +149,15 @@ const state = {
     { id:'perplexity', cat:'digital', title_en:'Perplexity Pro', title_ar:'بيربلكسيتي برو', image:'assets/perplexity\.png', options:[{key:'term', choices:['1 Year']}] },
 
     // Services
-    { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر', image:'assets/pc.jpg', options:[{key:'notes', textarea:true}] },
-    { id:'svc-mobile', cat:'service', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.jpg', options:[{key:'notes', textarea:true}] },
-    { id:'svc-cloud', cat:'service', title_en:'Cloud Accounts', title_ar:'حسابات سحابية', image:'assets/cloud.jpg', options:[{key:'notes', textarea:true}] },
-    { id:'svc-webprog', cat:'service', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/website-programming.png', options:[{key:'notes', textarea:true}] },
-    { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif', options:[{key:'notes', textarea:true}] },
-    { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif', options:[{key:'notes', textarea:true}] },
-    { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg', options:[{key:'notes', textarea:true}] },
+  { id:'svc-pc', cat:'service', title_en:'PC Optimization (Service)', title_ar:'تحسين الكمبيوتر', image:'assets/pc.jpg', options:[{key:'notes', textarea:true}] },
+  { id:'svc-mobile', cat:'service', title_en:'Mobile Services', title_ar:'خدمات الموبايل', image:'assets/mobile.jpg', options:[{key:'notes', textarea:true}] },
+  { id:'svc-cloud', cat:'service', title_en:'Cloud Accounts', title_ar:'حسابات سحابية', image:'assets/cloud.jpg', options:[{key:'notes', textarea:true}] },
+  { id:'svc-webprog', cat:'service', title_en:'Website Programming', title_ar:'برمجة مواقع', image:'assets/website-programming.png', options:[{key:'notes', textarea:true}] },
+  { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif', options:[{key:'notes', textarea:true}] },
+  { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif', options:[{key:'notes', textarea:true}] },
+  { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg', options:[{key:'notes', textarea:true}] },
+  { id:'almanasa', cat:'digital', title_en:'Almanasa', title_ar:'المناسة', image:'assets/Almanasa.png', options:[{key:'term', choices:['1 Month']}] },
+  { id:'valorant', cat:'digital', title_en:'Valorant', title_ar:'فالورانت', image:'assets/valorant-logo-x0jet8s98hbbfi62.jpg', options:[{key:'amount', choices:['10$','20$']}] },
 
   ],
   
@@ -191,6 +193,7 @@ const pricesIQD = {
   capcut:{'1 Month':12000,'1 Year':50000},
   disneyplus:{'1 Month':12000,'1 Year':55000},
   shahid:{'1 Month':8000,'1 Year':35000},
+  almanasa:{'1 Month':8000},
   netflix:{'1 Month':6000,'3 Months':12000,'6 Months':22000,'1 Year':35000},primevideo:{'1 Month':11000,'1 Year':65000},
   adobecc:{'1 Year':155000},
   duolingo:{'1 Year':20000,'Forever':40000},
@@ -200,12 +203,13 @@ const pricesIQD = {
   office:{'2016':2000,'2019':6000},
   perplexity:{'1 Year':30000},
   chatgptPerMonth: 12000,
-  itunes: {2:3000, 3:4500, 4:5500, 5:7000, 10:13000, 15:21000, 20:27000, 25:35000, 30:42000, 40:53000, 50:68500, 60:81500, 100:136500, 500:680000},
-  freefire: {100:1500, 210:3000, 350:7000, 1080:14000, 2200:28000},
+  itunes: {2:3500, 3:4750, 4:5750, 5:7250, 10:13250, 15:21500, 20:27500, 25:35500, 30:42750, 40:53750, 50:69500, 60:82500, 100:138250, 500:685250},
+  freefire: {100:1750, 210:3250, 350:7500, 1080:15000, 2200:28750},
   pubg: {60:1500, 325:6750, 660:12600, 1800:33000, 3850:62500, 8100:129500, 16200:244500, 24300:367500, 32400:490500, 40500:613500},
   xbox: {'Membership 1 Month':13000,'Membership 3 Months':34000,'Membership 12 Months':100000,'$10':13000,'$15':20000,'$20':26000},
   minecraft: {3500:27000},
-  discord: {'Nitro Classic Monthly (INT)':7000, 'Nitro Monthly (INT)':13000}
+  discord: {'Nitro Classic Monthly (INT)':8000, 'Nitro Monthly (INT)':14000},
+  valorant: {'10$':15000,'20$':29000}
 };
 
 function productTitle(p){
@@ -223,6 +227,7 @@ function priceFor(productId, selections){
     case 'capcut': return pricesIQD.capcut[selections.term]||0;
     case 'disneyplus': return pricesIQD.disneyplus[selections.term]||0;
     case 'shahid': return pricesIQD.shahid[selections.term]||0;
+    case 'almanasa': return pricesIQD.almanasa[selections.term]||0;
     case 'netflix': return pricesIQD.netflix[selections.term]||0;case 'primevideo': return pricesIQD.primevideo[selections.term]||0;
     case 'adobecc': return pricesIQD.adobecc[selections.term]||0;
     case 'duolingo': return pricesIQD.duolingo[selections.term]||0;
@@ -244,6 +249,7 @@ function priceFor(productId, selections){
     case 'xbox': return pricesIQD.xbox[selections.type]||0;
     case 'minecraft': return pricesIQD.minecraft[Number(selections.minecoins)]||0;
     case 'discord': return pricesIQD.discord[selections.plan]||0;
+    case 'valorant': return pricesIQD.valorant[selections.amount]||0;
     default: return 0;
   }
 }
@@ -253,6 +259,7 @@ function minPrice(productId){
     case 'capcut': return Math.min(...Object.values(pricesIQD.capcut));
     case 'disneyplus': return Math.min(...Object.values(pricesIQD.disneyplus));
     case 'shahid': return Math.min(...Object.values(pricesIQD.shahid));
+    case 'almanasa': return Math.min(...Object.values(pricesIQD.almanasa));
     case 'netflix': return Math.min(...Object.values(pricesIQD.netflix));case 'primevideo': return Math.min(...Object.values(pricesIQD.primevideo));
     case 'adobecc': return Math.min(...Object.values(pricesIQD.adobecc));
     case 'duolingo': return Math.min(...Object.values(pricesIQD.duolingo));
@@ -266,6 +273,7 @@ function minPrice(productId){
     case 'xbox': return Math.min(...Object.values(pricesIQD.xbox));
     case 'minecraft': return Math.min(...Object.values(pricesIQD.minecraft));
     case 'discord': return Math.min(...Object.values(pricesIQD.discord));
+    case 'valorant': return Math.min(...Object.values(pricesIQD.valorant));
     default: return 0;
   }
 }
@@ -294,7 +302,7 @@ function adjustCatalog(){
   }
 
   // Reorder digital products by priority
-  const order = ['pubg','freefire','itunes','chatgpt','duolingo','adobecc','primevideo','netflix','minecraft'];
+const order = ['pubg','freefire','itunes','chatgpt','almanasa','duolingo','adobecc','primevideo','netflix','minecraft','valorant'];
   const priority = Object.fromEntries(order.map((id,i)=>[id,i]));
   state.products.sort((a,b)=>{
     if(a.cat!==b.cat){
@@ -356,10 +364,9 @@ window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',
 // --- Added-to-cart animation: centered jelly bubble (subtle aesthetic) ---
 function triggerAddToCartAnimation(){
   try{
-    var bubble = document.createElement('div');
-    bubble.textContent = (state.lang==='ar' ? 'تمت الإضافة' : 'Added');
-    // Softer, aesthetic inline styling
-    bubble.setAttribute('style', [
+    var textBubble = document.createElement('div');
+    textBubble.textContent = (state.lang==='ar' ? 'تمت الإضافة' : 'Added');
+    textBubble.setAttribute('style', [
       'position:fixed',
       'left:50%',
       'top:50%',
@@ -368,9 +375,9 @@ function triggerAddToCartAnimation(){
       'background: linear-gradient(135deg, var(--brand), #34d399)',
       'color:#081017',
       'font-weight:800',
-      'font-size:14px',
+      'font-size:16px',
       'letter-spacing:.2px',
-      'padding:10px 16px',
+      'padding:12px 20px',
       'border-radius:999px',
       'border:1px solid rgba(255,255,255,.08)',
       'box-shadow: 0 10px 30px rgba(0,0,0,.25)',
@@ -378,19 +385,20 @@ function triggerAddToCartAnimation(){
       'pointer-events:none',
       'will-change: transform, opacity'
     ].join(';'));
-    document.body.appendChild(bubble);
-    try{
-      var anim = bubble.animate([
-        { opacity:0, transform:'translate(-50%,-50%) scale(0.92)' },
-        { opacity:1, transform:'translate(-50%,-50%) scale(1.04)' },
-        { opacity:1, transform:'translate(-50%,-50%) scale(0.99)' },
-        { opacity:0.98, transform:'translate(-50%,-50%) scale(1.00)' },
-        { opacity:0, transform:'translate(-50%,-50%) scale(1.00)' }
-      ], { duration: 1700, easing: 'cubic-bezier(.22,1,.36,1)' }); // smooth ease-out
-      anim.onfinish = function(){ bubble.remove(); };
-      setTimeout(function(){ try{ bubble.remove(); }catch(e){} }, 2000);
-    }catch(e){
-      setTimeout(function(){ try{ bubble.remove(); }catch(e){} }, 1900);
+    document.body.appendChild(textBubble);
+    var textAnim = textBubble.animate([
+      { opacity:0, transform:'translate(-50%,-50%) translateY(20px)' },
+      { opacity:1, transform:'translate(-50%,-50%) translateY(0)' },
+      { opacity:1, transform:'translate(-50%,-50%) translateY(0)' },
+      { opacity:0, transform:'translate(-50%,-50%) translateY(-10px)' }
+    ], { duration: 1500, easing: 'ease-out' });
+    textAnim.onfinish = function(){ textBubble.remove(); };
+
+    // Animate cart badge
+    var badge = document.getElementById('cart-count');
+    if(badge){
+      badge.classList.add('bounce');
+      setTimeout(function(){ badge.classList.remove('bounce'); }, 600);
     }
   }catch(e){}
 }
@@ -399,6 +407,7 @@ function addToCart(id, selections){
   if(!p) return;
   const unitPrice = priceFor(id, selections);
   state.cart.push({ id: uid(), productId:id, title: productTitle(p), selections, unitPrice, qty:1, image:p.image, cat:p.cat });
+  saveCart();
 triggerAddToCartAnimation();
   // Checkout validation
   const phoneEl = document.getElementById('phone');
@@ -424,11 +433,41 @@ triggerAddToCartAnimation();
 
   renderCartIndicator();
 }
-function removeFromCart(id){ state.cart = state.cart.filter(i=>i.id!==id); saveCart(); render(); }
-function changeQty(id, delta){ const it = state.cart.find(i=>i.id===id); if(!it) return; it.qty = Math.max(1, it.qty + delta); saveCart(); render(); }
+function removeFromCart(id){
+  state.cart = state.cart.filter(i=>i.id!==id);
+  saveCart();
+  // Remove row
+  const row = document.querySelector(`tr[data-item="${id}"]`);
+  if(row) row.remove();
+  // Update total
+  const totalEl = document.querySelector('.tag');
+  if(totalEl) totalEl.textContent = 'Total: ' + fmtIQD(cartTotal());
+  // Update checkout button
+  const checkoutBtn = document.getElementById('checkout');
+  if(checkoutBtn) checkoutBtn.disabled = state.cart.length === 0;
+  renderCartIndicator();
+}
+function changeQty(id, delta){
+  const it = state.cart.find(i=>i.id===id);
+  if(!it) return;
+  it.qty = Math.max(1, it.qty + delta);
+  saveCart();
+  // Update DOM
+  const row = document.querySelector(`tr[data-item="${id}"]`);
+  if(row){
+    const qtySpan = row.querySelector('.qty-value');
+    if(qtySpan) qtySpan.textContent = it.qty;
+    // const subTd = row.querySelectorAll('td')[3]; // subtotal is 4th td
+    // if(subTd) subTd.textContent = it.unitPrice? fmtIQD(it.unitPrice*it.qty): '—';
+  }
+  // Update total
+  const totalEl = document.querySelector('.tag');
+  if(totalEl) totalEl.textContent = 'Total: ' + fmtIQD(cartTotal());
+  renderCartIndicator();
+}
 function cartTotal(){ return state.cart.reduce((s,i)=>s+(i.unitPrice*i.qty),0); }
 function totalItems(){ return state.cart.reduce((s,i)=>s+i.qty,0); }
-function renderCartIndicator(){ const el = document.querySelector('#cart-count'); if(!el) return; const c = totalItems(); el.textContent = c? String(c):''; }
+function renderCartIndicator(){ const el = document.querySelector('#cart-count'); if(!el) return; const c = totalItems(); el.textContent = c? String(c):''; el.classList.remove('bounce'); }
 
 // Iraq phone normalization/validation
 function normalizeIraqPhone(input){
@@ -535,8 +574,8 @@ function viewHome(){
   <section class="hero container">
     <div class="hero-card">
       <div class="kicker">${t('welcome')}</div>
-      <h1>${t('heroLine')}</h1>
-      
+      <h1 class="hero-line">${i18n[state.lang].heroLine.split(/(\. )/).map((part, i) => `<span style="animation-delay: ${i*0.3}s">${part}</span>`).join('')}</h1>
+
     </div>
   </section>
   ${viewServices(true)}
@@ -594,6 +633,9 @@ function viewStore(){
   const services = state.products.filter(p=>p.cat==='service').map(productCard).join('');
   return `
   <section class="container">
+    <div class="back-row">
+      <a class="btn ghost" href="#home">‹ Back to Home</a>
+    </div>
     <div class="section-title">
       <div>
         <div class="kicker">${t('store')}</div>
@@ -691,7 +733,7 @@ function viewProduct(id){
   return `
   <section class="container">
     <div class="back-row">
-      <a class="btn ghost" href="#store">‹ ${t('back')}</a>
+      <a class="btn accent" href="#store">‹ ${t('back')}</a>
     </div>
     <div class="card">
       <div class="img ${FIT_IDS.includes(p.id)?'fit':''}"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
@@ -754,6 +796,7 @@ function viewCart(){
         </table>
         <div style="display:flex;gap:12px;justify-content:flex-end">
           <a class="btn ghost" href="#store">${t('continueShopping')}</a>
+          <a class="btn ghost" href="#previous-invoices">Previous Invoices</a>
           <button class="btn accent" id="checkout" ${state.cart.length? '' : 'disabled'}>${t('checkout')}</button>
         </div>
       </div>
@@ -826,7 +869,12 @@ function invoiceText(){
   lines.push(`--------------------------------`);
   lines.push(`${t('invoiceGrandTotal')}: ${fmtIQD(cartTotal())}`);
   lines.push(`${t('sendToBotNote')} @${BOT_USERNAME}.`);
-  return lines.join('\n');
+  const text = lines.join('\n');
+  // Save invoice
+  const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+  invoices.push({ id, text, date: now.toISOString() });
+  localStorage.setItem('invoices', JSON.stringify(invoices));
+  return text;
 }
 
 function viewInvoice(){
@@ -849,11 +897,46 @@ function viewInvoice(){
         <div style="display:flex;gap:12px;justify-content:flex-end">
           <button class="btn accent" id="copy-invoice">${t('copyInvoice')}</button>
           <a class="btn accent" id="open-telegram" href="${tgLink}" target="_blank" rel="noopener">${t('openTelegram')}</a>
-          <button class="btn accent" id="print-invoice">${t('print')}</button>
         </div>
         <p class="small">${t('sendToBotNote')} <strong>@${BOT_USERNAME}</strong>.</p>
       </div>
     </div>
+  </section>`;
+}
+
+function viewPreviousInvoices(){
+  const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+  const list = invoices.map(inv => {
+    const encoded = encodeURIComponent(inv.text);
+    const tgLink = `https://t.me/${BOT_USERNAME}?text=${encoded}`;
+    return `
+    <div class="card" data-invoice-id="${inv.id}">
+      <div class="body">
+        <div class="small">Invoice #${inv.id} - ${new Date(inv.date).toLocaleString()}</div>
+        <textarea rows="5">${inv.text}</textarea>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+          <button class="btn accent copy-inv" data-text="${encoded}">Copy</button>
+          <a class="btn accent" href="${tgLink}" target="_blank" rel="noopener">Telegram</a>
+          <button class="bin-btn delete-inv" title="Delete" data-id="${inv.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+              <path d="M10 11v6M14 11v6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+  return `
+  <section class="container">
+    <div class="section-title">
+      <div>
+        <div class="kicker">Invoices</div>
+        <h2>Previous Invoices</h2>
+      </div>
+    </div>
+    ${list || '<p class="small">No previous invoices.</p>'}
   </section>`;
 }
 
@@ -893,6 +976,7 @@ function render(){
     case 'cart': main = viewCart(); break;
     case 'checkout': main = viewCheckout(); break;
     case 'invoice': main = viewInvoice(); break;
+    case 'previous-invoices': main = viewPreviousInvoices(); break;
     case 'about': main = viewAbout(); break;
     case 'contact': main = viewContact(); break;
     default: main = viewHome();
@@ -987,9 +1071,18 @@ function render(){
   if(choices){
     choices.querySelectorAll('.choice').forEach(ch=>{
       ch.addEventListener('click', ()=>{
-        choices.querySelectorAll('.choice').forEach(x=>x.classList.remove('active'));
-        ch.classList.add('active');
-        selectedChoice = ch.getAttribute('data-choice'); const btn = document.getElementById('add-selected'); if(btn){ btn.removeAttribute('disabled'); }
+        if(ch.classList.contains('active')){
+          ch.classList.remove('active');
+          selectedChoice = null;
+          const btn = document.getElementById('add-selected');
+          if(btn){ btn.setAttribute('disabled',''); }
+        } else {
+          choices.querySelectorAll('.choice').forEach(x=>x.classList.remove('active'));
+          ch.classList.add('active');
+          selectedChoice = ch.getAttribute('data-choice');
+          const btn = document.getElementById('add-selected');
+          if(btn){ btn.removeAttribute('disabled'); }
+        }
       });
     });
   }
@@ -1062,15 +1155,16 @@ function render(){
 
   // Checkout form
   if(cont){
-    cont.addEventListener('click', ()=>{
+    cont.onclick = ()=>{
       const phoneRaw = document.getElementById('phone').value;
       const city = document.getElementById('city').value.trim();
       const normalized = normalizeIraqPhone(phoneRaw);
       if(!normalized){ alert(state.lang==='ar'?'أدخل رقم هاتف عراقي صحيح':'Please enter a valid Iraqi mobile number'); return; }
       if(!city){ alert(state.lang==='ar'?'أدخل المدينة':'Please enter your city'); return; }
       state.invoiceDetails = { phone: normalized, city, createdAt: new Date().toISOString() };
+      cont.setAttribute('disabled', '');
       navigate('invoice');
-    });
+    };
   }
 
   const copyBtn = document.getElementById('copy-invoice');
@@ -1085,8 +1179,24 @@ function render(){
     });
   }
 
-  const printBtn = document.getElementById('print-invoice');
-  if(printBtn){ printBtn.addEventListener('click', ()=> window.print()); }
+  document.querySelectorAll('.copy-inv').forEach(btn=> btn.addEventListener('click', async ()=>{
+    const txt = btn.getAttribute('data-text');
+    try{
+      await navigator.clipboard.writeText(decodeURIComponent(txt));
+      btn.textContent = state.lang==='ar'?'تم النسخ!':'Copied!';
+      setTimeout(()=> btn.textContent='Copy', 1200);
+    }catch(e){ alert('Copy failed: ' + e.message); }
+  }));
+
+  document.querySelectorAll('.delete-inv').forEach(btn=> btn.addEventListener('click', ()=>{
+    const id = btn.getAttribute('data-id');
+    const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+    const updated = invoices.filter(inv => inv.id !== id);
+    localStorage.setItem('invoices', JSON.stringify(updated));
+    render(); // re-render to update the view
+  }));
+
+
 
   
   // Checkout validation
@@ -1153,3 +1263,12 @@ function mapEmbed(){
   const src = "https://www.google.com/maps?q=Najaf%2C%20Iraq&output=embed";
   return `<iframe class="iframe-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}" width="100%" height="240" style="border:0;" allowfullscreen></iframe>`;
 }
+
+// Hide loading screen after app loads
+setTimeout(() => {
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.classList.add('hidden');
+    setTimeout(() => loadingScreen.style.display = 'none', 500);
+  }
+}, 1500);
