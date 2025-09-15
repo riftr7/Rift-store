@@ -156,7 +156,7 @@ const state = {
   { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif', options:[{key:'notes', textarea:true}] },
   { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif', options:[{key:'notes', textarea:true}] },
   { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg', options:[{key:'notes', textarea:true}] },
-  { id:'almanasa', cat:'digital', title_en:'Almanasa', title_ar:'المناسة', image:'assets/Almanasa.png', options:[{key:'term', choices:['1 Month']}] },
+  { id:'almanasa', cat:'digital', title_en:'Almanasa', title_ar:'المنصة', image:'assets/Almanasa.png', options:[{key:'term', choices:['1 Month']}] },
   { id:'valorant', cat:'digital', title_en:'Valorant', title_ar:'فالورانت', image:'assets/valorant-logo-x0jet8s98hbbfi62.jpg', options:[{key:'amount', choices:['10$','20$']}] },
 
   ],
