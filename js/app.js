@@ -566,7 +566,7 @@ function footer(){
       </div>
     </div>
   </footer>
-  <div class="watermark-fixed">${state.lang==='ar' ? 'حسين رحيم العابدي' : 'Hussein Raheem Al-Abedi'}</div>`;
+  <div class="watermark-fixed">${state.lang==='ar' ? 'RIFT® All Rights Reserved' : 'RIFT® All Rights Reserved'}</div>`;
 }
 
 function viewHome(){
