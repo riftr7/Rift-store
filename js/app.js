@@ -1,10 +1,11 @@
-let cont = null;
+  let cont = null;
 
 // --- Config ---
-const BOT_USERNAME = 'husseina028bot';
-const CONTACT_EMAIL = 'abedihusseina028@gmail.com';
+const BOT_USERNAME = 'RIFT_R7bot';
+const CONTACT_EMAIL = 'riftr7@gmail.com';
 const INSTAGRAM = 'rift_r7';
 const LOCATION_QUERY = 'Najaf, Iraq';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhJGjRF4ouUsXhJFXANVJbpZTHSkHMAJ548s0zOVaRmTG2NE7_QRnkhh2-j5c-HkC_s_MR918qHG7x/pub?output=xlsx';
 
 // --- Error overlay (avoids silent blank screens) ---
 (function(){ window.__riftErrorOverlayInstalled = true; window.__RIFT_OVERLAY_DISABLED = true; function show(){ /* overlay disabled */ } })();
@@ -35,7 +36,7 @@ const i18n = {
     exploreServices: 'Explore Services',
     whatWeDo: 'What we do',
     goToStore: 'Go to Store',
-    addViaStore: 'Add via Store',
+    addViaStore: 'Add',
     addToCart: 'Add to Cart',
     view: 'View',
     quantity: 'Quantity',
@@ -82,7 +83,7 @@ const i18n = {
     exploreServices: 'استكشف الخدمات',
     whatWeDo: 'ماذا نقدم',
     goToStore: 'اذهب للمتجر',
-    addViaStore: 'أضف من المتجر',
+    addViaStore: 'أضف',
     addToCart: 'أضف إلى السلة',
     view: 'عرض',
     quantity: 'الكمية',
@@ -115,6 +116,7 @@ const i18n = {
     sendToBotNote: 'انسخ هذه الفاتورة، افتح تيليجرام، ثم أرسلها إلى',
     invoiceGrandTotal: 'الإجمالي النهائي',
     mapLink: LOCATION_QUERY,
+
   }
 };
 
@@ -126,6 +128,11 @@ const state = {
   lang: localStorage.getItem('lang') || 'en',
   cart: JSON.parse(localStorage.getItem('cart')||'[]'),
   invoiceDetails: null,
+  sheetProducts: [],
+  loadedSheet: false,
+  loadingSheet: false,
+  loadingStore: false,
+
   products: [
         { id:'chatgpt-personal', cat:'digital', title_en:'ChatGPT Personal Accounts', title_ar:'حسابات فردية (شهر واحد)', image:'assets/chatgpt\-personal\.png', options:[{key:'plan', choices:['1 Month']}] },
     { id:'chatgpt-shared', cat:'digital', title_en:'ChatGPT Shared Accounts', title_ar:'حسابات مشتركة', image:'assets/chatgpt\-shared\.png', options:[{key:'plan', choices:['1 Month','1 Year']}] },
@@ -156,7 +163,7 @@ const state = {
   { id:'svc-appprog', cat:'service', title_en:'App Programming', title_ar:'برمجة تطبيقات', image:'assets/app-development.avif', options:[{key:'notes', textarea:true}] },
   { id:'svc-apps', cat:'service', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif', options:[{key:'notes', textarea:true}] },
   { id:'svc-programs', cat:'service', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg', options:[{key:'notes', textarea:true}] },
-  { id:'almanasa', cat:'digital', title_en:'Almanasa', title_ar:'المنصة', image:'assets/Almanasa.png', options:[{key:'term', choices:['1 Month']}] },
+  { id:'almanasa', cat:'digital', title_en:'Almanasa', title_ar:'المناسة', image:'assets/Almanasa.png', options:[{key:'term', choices:['1 Month']}] },
   { id:'valorant', cat:'digital', title_en:'Valorant', title_ar:'فالورانت', image:'assets/valorant-logo-x0jet8s98hbbfi62.jpg', options:[{key:'amount', choices:['10$','20$']}] },
 
   ],
@@ -177,9 +184,6 @@ services: [
     {key:'cloud', title_en:'Cloud Accounts', image:'assets/cloud.jpg', title_ar:'حسابات سحابية',
       desc_en:'Setup, recovery, storage, security.',
       desc_ar:'إعداد، استرجاع، تخزين، أمان.'},
-    {key:'apps', title_en:'Apps', title_ar:'التطبيقات', image:'assets/apps.avif',
-      desc_en:'Install, configure, and update essential apps.',
-      desc_ar:'تثبيت وإعداد وتحديث التطبيقات.'},
     {key:'programs', title_en:'Programs', title_ar:'البرامج', image:'assets/programms.jpg',
       desc_en:'Custom scripts, automation, small web tools.',
       desc_ar:'سكربتات مخصصة، أتمتة، أدوات ويب صغيرة.'}
@@ -212,6 +216,9 @@ const pricesIQD = {
   valorant: {'10$':15000,'20$':29000}
 };
 
+// --- Sheet Prices (IQD) ---
+const pricesSheet = {};
+
 function productTitle(p){
   return state.lang==='ar' ? p.title_ar : p.title_en;
 }
@@ -223,6 +230,13 @@ function serviceDesc(s){
 }
 
 function priceFor(productId, selections){
+  if (pricesSheet[productId]) {
+    return pricesSheet[productId][selections.quantity] || 0;
+  }
+  if (productId.startsWith('sheet-')) {
+    // For sheet products, price is in selections
+    return selections.price || 0;
+  }
   switch(productId){
     case 'capcut': return pricesIQD.capcut[selections.term]||0;
     case 'disneyplus': return pricesIQD.disneyplus[selections.term]||0;
@@ -255,6 +269,17 @@ function priceFor(productId, selections){
 }
 
 function minPrice(productId){
+  if (pricesSheet[productId]) {
+    return Math.min(...Object.values(pricesSheet[productId]));
+  }
+  if (productId.startsWith('sheet-')) {
+    // For sheet products, find min price from sheet items
+    const sheet = state.sheetProducts.find(s => 'sheet-' + s.name.replace(/\s+/g, '-').toLowerCase() === productId);
+    if (sheet) {
+      return Math.min(...sheet.items.map(item => item.price));
+    }
+    return 0;
+  }
   switch(productId){
     case 'capcut': return Math.min(...Object.values(pricesIQD.capcut));
     case 'disneyplus': return Math.min(...Object.values(pricesIQD.disneyplus));
@@ -280,42 +305,47 @@ function minPrice(productId){
 
 
 function adjustCatalog(){
-  // Remove unwanted services
-  state.products = state.products.filter(p=> !['svc-appprog'].includes(p.id));
+  // If sheet products loaded and have items, show only sheet products
+  if (state.loadedSheet && state.sheetProducts.length > 0) {
+    state.products = state.products.filter(p => p.id.startsWith('sheet-'));
+  } else {
+    // Remove services from products
+    state.products = state.products.filter(p=> p.cat !== 'service');
 
-  // Remove duplicate ChatGPT items if we are going to show merged one in list
-  state.products = state.products.filter(p=> !['chatgpt-personal','chatgpt-shared'].includes(p.id));
+    // Remove duplicate ChatGPT items if we are going to show merged one in list
+    state.products = state.products.filter(p=> !['chatgpt-personal','chatgpt-shared'].includes(p.id));
 
-  // Ensure merged ChatGPT appears as a product card
-  const hasChatGPT = state.products.some(p=> p.id==='chatgpt');
-  if(!hasChatGPT){
-    state.products.push({
-      id:'chatgpt',
-      cat:'digital',
-      title_en:'ChatGPT',
-      title_ar:'شات جي بي تي',
-      image:'assets/chatgpt.png',
-      desc_en:'Personal & Shared accounts in one place',
-      desc_ar:'حسابات شخصية ومشتركة في مكان واحد',
-      options:[{key:'months', choices:[1,3,6,12]}]
+    // Ensure merged ChatGPT appears as a product card
+    const hasChatGPT = state.products.some(p=> p.id==='chatgpt');
+    if(!hasChatGPT){
+      state.products.push({
+        id:'chatgpt',
+        cat:'digital',
+        title_en:'ChatGPT',
+        title_ar:'شات جي بي تي',
+        image:'assets/chatgpt.png',
+        desc_en:'Personal & Shared accounts in one place',
+        desc_ar:'حسابات شخصية ومشتركة في مكان واحد',
+        options:[{key:'months', choices:[1,3,6,12]}]
+      });
+    }
+
+    // Reorder digital products by priority
+    const order = ['pubg','freefire','itunes','chatgpt','almanasa','duolingo','adobecc','primevideo','netflix','minecraft','valorant'];
+    const priority = Object.fromEntries(order.map((id,i)=>[id,i]));
+    state.products.sort((a,b)=>{
+      if(a.cat!==b.cat){
+        return a.cat==='digital' ? -1 : b.cat==='digital' ? 1 : 0;
+      }
+      // within digital, apply priority
+      if(a.cat==='digital'){
+        const pa = (priority[a.id]!==undefined)? priority[a.id] : 999;
+        const pb = (priority[b.id]!==undefined)? priority[b.id] : 999;
+        if(pa!==pb) return pa-pb;
+      }
+      return 0;
     });
   }
-
-  // Reorder digital products by priority
-const order = ['pubg','freefire','itunes','chatgpt','almanasa','duolingo','adobecc','primevideo','netflix','minecraft','valorant'];
-  const priority = Object.fromEntries(order.map((id,i)=>[id,i]));
-  state.products.sort((a,b)=>{
-    if(a.cat!==b.cat){
-      return a.cat==='digital' ? -1 : b.cat==='digital' ? 1 : 0;
-    }
-    // within digital, apply priority
-    if(a.cat==='digital'){
-      const pa = (priority[a.id]!==undefined)? priority[a.id] : 999;
-      const pb = (priority[b.id]!==undefined)? priority[b.id] : 999;
-      if(pa!==pb) return pa-pb;
-    }
-    return 0;
-  });
 }
 
 // Localization helpers for option labels (Arabic durations & digits)
@@ -431,6 +461,8 @@ triggerAddToCartAnimation();
     if(lt){ lt.addEventListener('click', function(){ setLang(state.lang==='ar' ? 'en' : 'ar'); }); }
   })();
 
+
+
   renderCartIndicator();
 }
 function removeFromCart(id){
@@ -497,22 +529,98 @@ function openItemModal(it){
 }
 
 
+
+
+function parseWorkbook(workbook) {
+  const products = [];
+  workbook.SheetNames.forEach(sheetName => {
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    const product = {
+      name: sheetName,
+      items: []
+    };
+
+    jsonData.forEach((row, index) => {
+      if (index === 0) return; // Skip header
+      if (row.length >= 8) {
+        const item = {
+          englishName: row[1] || '',
+          arabicName: row[2] || '',
+          quantity: row[3] || '',
+          price: parseFloat(row[4]) || 0,
+          imageUrl: row[5] || '',
+          description: row[6] || '',
+          section: row[7] || ''
+        };
+        product.items.push(item);
+      }
+    });
+
+    if (product.items.length > 0) {
+      products.push(product);
+    }
+  });
+
+  return products;
+}
+
+async function loadSheetProducts() {
+  if (state.loadedSheet || state.loadingSheet) return;
+  state.loadingSheet = true;
+  const loadingDiv = document.getElementById('sheet-loading');
+  if (loadingDiv) loadingDiv.classList.remove('hidden');
+  try {
+    const response = await fetch(SHEET_URL);
+    if (!response.ok) throw new Error('Failed to fetch sheet');
+    const arrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    state.sheetProducts = parseWorkbook(workbook);
+    // Add sheet names as products
+    state.sheetProducts.forEach(sheet => {
+      const id = 'sheet-' + sheet.name.replace(/\s+/g, '-').toLowerCase();
+      const product = {
+        id: id,
+        cat: 'digital', // Assuming all sheets are digital for now
+        title_en: sheet.name,
+        title_ar: sheet.items[0]?.arabicName || sheet.name, // Use Arabic name from XLS if available, else English
+        image: sheet.items[0]?.imageUrl || 'assets/apps.png',
+        desc_en: `${sheet.items.length} items`,
+        desc_ar: `${sheet.items.length} عناصر`,
+        options: [] // No options, just view
+      };
+      state.products.push(product);
+    });
+    state.loadedSheet = true;
+  } catch (error) {
+    console.error('Error loading sheet products:', error);
+    state.loadedSheet = true; // Even on error, mark as loaded to use fallback
+  } finally {
+    state.loadingSheet = false;
+    if (loadingDiv) loadingDiv.classList.add('hidden');
+  }
+}
+
+
+
+
+
 // --- UI TEMPLATES ---
 
 function header(){
   const l = state.lang;
   return `
-  <header class="header">
+  <header class="header" style="background: rgba(11,14,19,.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,.06);">
     <div class="header-inner container">
       <a class="brand" href="#home" aria-label="Home">
         <img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
-        <div>${t('brand')}</div>
+        <div style="color: #8a2be2;">${t('brand')}</div>
       </a>
       <div class="right">
-        <a class="btn ghost" href="#store">${t('store')}</a>
-        <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}">🛒<span id="cart-count" class="badge"></span></a>
-        <div class="hamburger" id="hamburger" aria-label="Open menu"><span></span></div>
-        <div class="chip lang-toggle" id="lang-toggle">${state.lang==='ar'?'EN':'AR'}</div>
+        <a class="btn ghost" href="#store" style="color: #8a2be2;">${t('store')}</a>
+        <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}" style="color: #8a2be2;">🛒<span id="cart-count" class="badge"></span></a>
+        <div class="hamburger" id="hamburger" aria-label="Open menu" style="color: #8a2be2;"><span></span></div>
+        <div class="chip lang-toggle" id="lang-toggle" style="color: #8a2be2;">${state.lang==='ar'?'EN':'AR'}</div>
       </div>
 
     </div>
@@ -565,20 +673,34 @@ function footer(){
         </div>
       </div>
     </div>
-  </footer>
-  <div class="watermark-fixed">${state.lang==='ar' ? 'RIFT® All Rights Reserved' : 'RIFT® All Rights Reserved'}</div>`;
+  </footer>`;
 }
 
 function viewHome(){
   return `
-  <section class="hero container">
+  <section class="hero container" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
     <div class="hero-card">
       <div class="kicker">${t('welcome')}</div>
       <h1 class="hero-line">${i18n[state.lang].heroLine.split(/(\. )/).map((part, i) => `<span style="animation-delay: ${i*0.3}s">${part}</span>`).join('')}</h1>
-
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+      <button id="goToStore" class="btn primary explore" style="box-shadow: 0 0 30px rgba(255,255,255,0.3);">${t('goToStore')}</button>
     </div>
   </section>
   ${viewServices(true)}
+  <div id="custom-service-modal" class="modal">
+    <div class="overlay" data-close-modal></div>
+    <div class="panel">
+      <h3>${state.lang === 'ar' ? 'طلب خدمة مخصصة' : 'Custom Service Request'}</h3>
+      <label class="small">${t('notes')}</label>
+      <textarea id="custom-service-notes" rows="6" placeholder="${state.lang === 'ar' ? 'اكتب تفاصيل الخدمة التي تحتاجها...' : 'Describe the service you need...'}"></textarea>
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px">
+        <button class="btn" data-close-modal>${state.lang === 'ar' ? 'إغلاق' : 'Close'}</button>
+        <button class="btn accent" id="add-custom-service">${t('addToCart')}</button>
+      </div>
+    </div>
+  </div>
+
   `;
 }
 
@@ -592,7 +714,7 @@ function viewServices(inHome=false){
         <div class="kicker">${s.key.replace('-',' ')}</div>
         <strong>${serviceTitle(s)}</strong>
         <p class="small">${serviceDesc(s)}</p>
-        <a class="btn ghost" href="#store">${t('addViaStore')}</a>
+        <button class="btn ghost" data-add-details="${s.key}" style="color: white;">${t('addViaStore')}</button>
       </div>
     </div>
   `).join('');
@@ -603,7 +725,7 @@ function viewServices(inHome=false){
         <div class="kicker">${t('exploreServices')}</div>
         <h2>${inHome ? t('whatWeDo') : t('services')}</h2>
       </div>
-      <a class="btn" href="#store">${t('goToStore')}</a>
+      <a class="btn" href="#store" style="display:none;">${t('goToStore')}</a>
     </div>
     <div class="grid cards mobile-two-col uniform-cards">${cards}</div>
   </section>`;
@@ -614,6 +736,8 @@ const FIT_IDS = ['office','xbox','chatgpt-personal','chatgpt-shared'];
 function productCard(p){
   const mp = minPrice(p.id);
   const title = productTitle(p);
+  const isSheetProduct = p.id.startsWith('sheet-');
+  const href = isSheetProduct ? `#sheet-product/${p.id}` : `#product/${p.id}`;
   return `
   <div class="card" data-open="${p.id}">
     <div class="img ${FIT_IDS.includes(p.id)?'fit':''}"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
@@ -623,14 +747,13 @@ function productCard(p){
         ${p.desc_ar && state.lang==='ar' ? `<p class="small">${p.desc_ar}</p>` : ''}
         <!--desc-injected-->
       ${mp ? `<div class="small">${t('price')}: ${fmtIQD(mp)} +</div>` : ''}
-      <a class="btn accent block" href="#product/${p.id}">${t('view')}</a>
+      <a class="btn accent block" href="${href}">${t('view')}</a>
     </div>
   </div>`;
 }
 
 function viewStore(){
   const goods = state.products.filter(p=>p.cat==='digital').map(productCard).join('');
-  const services = state.products.filter(p=>p.cat==='service').map(productCard).join('');
   return `
   <section class="container">
     <div class="back-row">
@@ -644,14 +767,6 @@ function viewStore(){
       <div class="tag">Images • ${t('price')} • ${t('view')}</div>
     </div>
     <div class="grid cards mobile-two-col uniform-cards">${goods}</div>
-    <div class="section-title">
-      <div>
-        <div class="kicker">${t('store')}</div>
-        <h2>${t('storeServices')}</h2>
-      </div>
-      <div class="tag">${t('addDetails')}</div>
-    </div>
-    <div class="grid cards mobile-two-col uniform-cards">${services}</div>
   </section>`;
 }
 
@@ -661,7 +776,7 @@ function viewProduct(id){
   const title = productTitle(p);
   const isService = p.cat==='service';
 
-  
+
   // Merged ChatGPT special view
   if(id==='chatgpt'){
     // Side-by-side sections with price buttons; single Add button
@@ -743,6 +858,47 @@ function viewProduct(id){
         ${p.desc_ar && state.lang==='ar' ? `<p class=\"small\">${p.desc_ar}</p>` : ''}
         <!--desc-injected-->
         ${content}
+      </div>
+    </div>
+  </section>
+  `;
+}
+
+function viewSheetProduct(id){
+  const p = state.products.find(x=>x.id===id);
+  if(!p) { navigate('store'); return ''; }
+  const sheet = state.sheetProducts.find(s => 'sheet-' + s.name.replace(/\s+/g, '-').toLowerCase() === id);
+  if(!sheet) { navigate('store'); return ''; }
+  const title = productTitle(p);
+
+  // Build table of items
+  const itemRows = sheet.items.map(item => `
+    <tr>
+      <td><img src="${item.imageUrl || 'assets/apps.png'}" alt="" style="width:48px;height:32px;object-fit:cover;border-radius:4px"></td>
+      <td><strong>${state.lang === 'ar' ? item.arabicName : item.englishName}</strong><br><small>${item.description}</small></td>
+      <td>${item.quantity}</td>
+      <td>${fmtIQD(item.price)}</td>
+      <td><button class="btn accent" data-add-sheet-item="${item.englishName}" data-price="${item.price}" data-quantity="${item.quantity}">${t('addToCart')}</button></td>
+    </tr>
+  `).join('');
+
+  return `
+  <section class="container">
+    <div class="back-row">
+      <a class="btn accent" href="#store">‹ ${t('back')}</a>
+    </div>
+    <div class="section-title">
+      <div>
+        <div class="kicker">${t('store')}</div>
+        <h2>${title}</h2>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <table class="table">
+          <thead><tr><th>Image</th><th>Item</th><th>Quantity</th><th>Price</th><th></th></tr></thead>
+          <tbody>${itemRows}</tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -903,6 +1059,8 @@ function viewInvoice(){
 
 function viewAbout(){ return `<section class="container"><h2>${t('about')} ${t('brand')}</h2><p class="small">Digital goods and services with clear pricing and a clean experience.</p></section>`; }
 
+
+
 function viewContact(){
   const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(LOCATION_QUERY)}&output=embed`;
   return `
@@ -934,6 +1092,7 @@ function render(){
     case 'services': main = viewServices(false); break;
     case 'store': main = viewStore(); break;
     case 'product': main = viewProduct(param); break;
+    case 'sheet-product': main = viewSheetProduct(param); break;
     case 'cart': main = viewCart(); break;
     case 'checkout': main = viewCheckout(); break;
     case 'invoice': main = viewInvoice(); break;
@@ -977,9 +1136,55 @@ function render(){
   document.querySelectorAll('[data-open]').forEach(card=>{
     card.addEventListener('click', (e)=>{
       const id = card.getAttribute('data-open');
-      navigate('product/'+id);
+      const isSheetProduct = id.startsWith('sheet-');
+      const route = isSheetProduct ? 'sheet-product' : 'product';
+      navigate(route + '/' + id);
     });
   });
+
+  // Go to store button with spinner
+  const goToStoreBtn = document.querySelector('a[href="#store"]');
+  if (goToStoreBtn) {
+    goToStoreBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (state.loadingStore) return;
+      state.loadingStore = true;
+      const originalText = goToStoreBtn.innerHTML;
+      goToStoreBtn.innerHTML = '<span class="loader"></span>';
+      goToStoreBtn.style.pointerEvents = 'none';
+      try {
+        await loadSheetProducts();
+        navigate('store');
+      } finally {
+        goToStoreBtn.innerHTML = originalText;
+        goToStoreBtn.style.pointerEvents = '';
+        state.loadingStore = false;
+      }
+    });
+  }
+
+  // Glowing Go to Store button
+  const glowingGoToStoreBtn = document.getElementById('goToStore');
+  if (glowingGoToStoreBtn) {
+    glowingGoToStoreBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (state.loadingStore) return;
+      state.loadingStore = true;
+      const originalText = glowingGoToStoreBtn.innerHTML;
+      glowingGoToStoreBtn.innerHTML = '<span class="loader"></span>';
+      glowingGoToStoreBtn.style.pointerEvents = 'none';
+      try {
+        await loadSheetProducts();
+        navigate('store');
+      } finally {
+        glowingGoToStoreBtn.innerHTML = originalText;
+        glowingGoToStoreBtn.style.pointerEvents = '';
+        state.loadingStore = false;
+      }
+    });
+  }
+
+
 
   // Product detail choices
 /* ChatGPT price-choice bindings (single Add) */
@@ -1105,6 +1310,24 @@ function render(){
     const m = document.getElementById('item-modal'); m && m.classList.remove('open');
   }));
 
+  // Close custom service modal
+  document.querySelectorAll('#custom-service-modal [data-close-modal]').forEach(btn=> btn.addEventListener('click', ()=>{
+    const modal = document.getElementById('custom-service-modal');
+    if(modal) modal.classList.remove('open');
+  }));
+
+  // Sheet product add to cart
+  document.querySelectorAll('[data-add-sheet-item]').forEach(btn=> btn.addEventListener('click', ()=>{
+    const itemName = btn.getAttribute('data-add-sheet-item');
+    const price = parseFloat(btn.getAttribute('data-price'));
+    const quantity = btn.getAttribute('data-quantity');
+    const [_, productId] = state.route.split('/');
+    const p = state.products.find(x=>x.id===productId);
+    if(!p) return;
+    const selections = { item: itemName, quantity: quantity, price: price };
+    addToCart(productId, selections);
+  }));
+
   const checkoutBtn = document.getElementById('checkout');
   if(checkoutBtn){
     checkoutBtn.addEventListener('click', ()=>{
@@ -1166,6 +1389,57 @@ function render(){
     if(lt){ lt.addEventListener('click', function(){ setLang(state.lang==='ar' ? 'en' : 'ar'); }); }
   })();
 
+  // Custom service modal
+  document.querySelectorAll('[data-add-details]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const serviceKey = btn.getAttribute('data-add-details');
+      const service = state.services.find(s => s.key === serviceKey);
+      if (service) {
+        // Pre-fill modal title with service name
+        const modal = document.getElementById('custom-service-modal');
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.textContent = serviceTitle(service);
+        // Store service key for later
+        modal.setAttribute('data-service-key', serviceKey);
+        modal.classList.add('open');
+      }
+    });
+  });
+
+  const addCustomService = document.getElementById('add-custom-service');
+  if(addCustomService){
+    addCustomService.addEventListener('click', ()=>{
+      const modal = document.getElementById('custom-service-modal');
+      const serviceKey = modal.getAttribute('data-service-key');
+      const service = state.services.find(s => s.key === serviceKey);
+      const notesEl = document.getElementById('custom-service-notes');
+      const notes = (notesEl && notesEl.value.trim()) || '';
+      if(!notes){
+        alert(state.lang === 'ar' ? 'يرجى كتابة تفاصيل الخدمة' : 'Please describe the service');
+        return;
+      }
+      // Add specific service to cart
+      const customService = {
+        id: serviceKey + '-' + uid(),
+        productId: serviceKey,
+        title: serviceTitle(service),
+        selections: { notes },
+        unitPrice: 0, // On request
+        qty: 1,
+        image: service.image || 'assets/apps.png',
+        cat: 'service'
+      };
+      state.cart.push(customService);
+      saveCart();
+      triggerAddToCartAnimation();
+      // Close modal
+      if(modal) modal.classList.remove('open');
+      notesEl.value = '';
+      renderCartIndicator();
+    });
+  }
+
   renderCartIndicator();
 }
 
@@ -1193,11 +1467,29 @@ if (document.readyState !== 'loading') { try { const r = location.hash.replace('
 })();
 
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   if(!localStorage.getItem('lang')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('lang','ar'); } else { localStorage.setItem('lang','en'); } }catch(e){} }
-  const r = location.hash.replace('#',''); state.route = r || 'home'; adjustCatalog();render();
-});
+  const r = location.hash.replace('#',''); state.route = r || 'home';
 
+  // Add sheet loading indicator
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'sheet-loading';
+  loadingDiv.innerHTML = '<span class="loader"></span>';
+  loadingDiv.classList.add('hidden');
+  document.body.appendChild(loadingDiv);
+
+  // Load sheet products and then render
+  await loadSheetProducts();
+  adjustCatalog();
+  render();
+
+  // Now hide the initial loading screen
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.classList.add('hidden');
+    setTimeout(() => loadingScreen.style.display = 'none', 500);
+  }
+});
 
 function mapEmbed(){
   const online = (typeof navigator!=='undefined' && navigator.onLine);
@@ -1208,12 +1500,3 @@ function mapEmbed(){
   const src = "https://www.google.com/maps?q=Najaf%2C%20Iraq&output=embed";
   return `<iframe class="iframe-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${src}" width="100%" height="240" style="border:0;" allowfullscreen></iframe>`;
 }
-
-// Hide loading screen after app loads
-setTimeout(() => {
-  const loadingScreen = document.getElementById('loading-screen');
-  if (loadingScreen) {
-    loadingScreen.classList.add('hidden');
-    setTimeout(() => loadingScreen.style.display = 'none', 500);
-  }
-}, 1500);
