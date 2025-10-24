@@ -6,7 +6,6 @@ const CONTACT_EMAIL = 'riftr7@gmail.com';
 const INSTAGRAM = 'rift_r7';
 const LOCATION_QUERY = 'Najaf, Iraq';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhJGjRF4ouUsXhJFXANVJbpZTHSkHMAJ548s0zOVaRmTG2NE7_QRnkhh2-j5c-HkC_s_MR918qHG7x/pub?output=xlsx';
-
 // --- Error overlay (avoids silent blank screens) ---
 (function(){ window.__riftErrorOverlayInstalled = true; window.__RIFT_OVERLAY_DISABLED = true; function show(){ /* overlay disabled */ } })();
 // uid helper for older browsers
@@ -541,22 +540,21 @@ function parseWorkbook(workbook) {
       items: []
     };
 
-    jsonData.forEach((row, index) => {
-      if (index === 0) return; // Skip header
-      if (row.length >= 8) {
-        const item = {
-          englishName: row[1] || '',
-          arabicName: row[2] || '',
-          quantity: row[3] || '',
-          price: parseFloat(row[4]) || 0,
-          imageUrl: row[5] || '',
-          description: row[6] || '',
-          section: row[7] || ''
-        };
-        product.items.push(item);
-      }
-    });
-
+jsonData.forEach((row, index) => {
+  if (index === 0) return; // Skip header
+  if (row.length >= 7) { // Check for at least 7 columns
+    const item = {
+      englishName: row[1] || '', // Column B: Product Name (English)
+      arabicName: row[2] || '', // Column C: Product Name Arabic
+      quantity: row[3] || '', // Column D: Quantity
+      price: parseFloat(row[4]) || 0, // Column E: Price
+      imageUrl: row[5] || '', // Column F: Image URL
+      description: row[6] || '', // Column G: Description
+      productId: row[0] || '' // Column A: ID (or you can use row number)
+    };
+    product.items.push(item);
+  }
+});
     if (product.items.length > 0) {
       products.push(product);
     }
@@ -752,6 +750,22 @@ function productCard(p){
   </div>`;
 }
 
+function sheetProductCard(sheet){
+  const id = 'sheet-' + sheet.name.replace(/\s+/g, '-').toLowerCase();
+  const title = sheet.name;
+  const image = sheet.items[0]?.imageUrl || 'assets/apps.png';
+  const desc = `${sheet.items.length} items`;
+  return `
+  <div class="card" data-open="${id}">
+    <div class="img"><img src="${image}" alt="${title}"></div>
+    <div class="body">
+      <strong>${title}</strong>
+      <p class="small">${desc}</p>
+      <a class="btn accent block" href="#sheet-product/${id}">${t('view')}</a>
+    </div>
+  </div>`;
+}
+
 function viewStore(){
   const goods = state.products.filter(p=>p.cat==='digital').map(productCard).join('');
   return `
@@ -871,18 +885,21 @@ function viewSheetProduct(id){
   if(!sheet) { navigate('store'); return ''; }
   const title = productTitle(p);
 
-  // Build table of items
-  const itemRows = sheet.items.map(item => `
-    <tr>
-      <td><img src="${item.imageUrl || 'assets/apps.png'}" alt="" style="width:48px;height:32px;object-fit:cover;border-radius:4px"></td>
-      <td><strong>${state.lang === 'ar' ? item.arabicName : item.englishName}</strong><br><small>${item.description}</small></td>
-      <td>${item.quantity}</td>
-      <td>${fmtIQD(item.price)}</td>
-      <td><button class="btn accent" data-add-sheet-item="${item.englishName}" data-price="${item.price}" data-quantity="${item.quantity}">${t('addToCart')}</button></td>
-    </tr>
-  `).join('');
+const itemCards = sheet.items.map(item => `
+  <div class="card">
+    <div class="img"><img src="${item.imageUrl || 'assets/apps.png'}" alt="${state.lang === 'ar' ? item.arabicName : item.englishName}"></div>
+    <div class="body">
+      <strong>${state.lang === 'ar' ? item.arabicName : item.englishName}</strong>
+      <p class="small">${item.description}</p>
+      <div class="small">${t('quantity')}: ${item.quantity}</div>
+      <div class="small">${t('price')}: ${fmtIQD(item.price)}</div>
+      <button class="btn accent" data-add-sheet-item="${item.productId || item.englishName}" data-price="${item.price}" data-quantity="${item.quantity}" data-description="${item.description}">${t('addToCart')}</button>
+    </div>
+  </div>
+`).join('');
 
-  return `
+  if (sheet.items.length === 1) {
+    return `
   <section class="container">
     <div class="back-row">
       <a class="btn accent" href="#store">‹ ${t('back')}</a>
@@ -893,16 +910,27 @@ function viewSheetProduct(id){
         <h2>${title}</h2>
       </div>
     </div>
-    <div class="card">
-      <div class="body">
-        <table class="table">
-          <thead><tr><th>Image</th><th>Item</th><th>Quantity</th><th>Price</th><th></th></tr></thead>
-          <tbody>${itemRows}</tbody>
-        </table>
-      </div>
+    <div style="display: flex; justify-content: center;">
+      ${itemCards}
     </div>
   </section>
   `;
+  } else {
+    return `
+  <section class="container">
+    <div class="back-row">
+      <a class="btn accent" href="#store">‹ ${t('back')}</a>
+    </div>
+    <div class="section-title">
+      <div>
+        <div class="kicker">${t('store')}</div>
+        <h2>${title}</h2>
+      </div>
+    </div>
+    <div class="grid cards mobile-two-col uniform-cards">${itemCards}</div>
+  </section>
+  `;
+  }
 }
 
 
@@ -1318,13 +1346,13 @@ function render(){
 
   // Sheet product add to cart
   document.querySelectorAll('[data-add-sheet-item]').forEach(btn=> btn.addEventListener('click', ()=>{
-    const itemName = btn.getAttribute('data-add-sheet-item');
+    const itemId = btn.getAttribute('data-add-sheet-item');
     const price = parseFloat(btn.getAttribute('data-price'));
-    const quantity = btn.getAttribute('data-quantity');
+    const description = btn.getAttribute('data-description');
     const [_, productId] = state.route.split('/');
     const p = state.products.find(x=>x.id===productId);
     if(!p) return;
-    const selections = { item: itemName, quantity: quantity, price: price };
+    const selections = { itemId: itemId, description: description, price: price };
     addToCart(productId, selections);
   }));
 
