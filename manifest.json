@@ -1,7 +1,7 @@
 {
-  "name": "Rift",
+  "name": "Rift Store",
   "short_name": "Rift",
-  "description": "Rift — connect and explore securely.",
+  "description": "Rift Store - Buy digital goods like iTunes, PUBG, Free Fire, Xbox, Discord, and more with secure payments.",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
