@@ -1,52 +1,39 @@
-const CACHE_NAME = 'rift-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/css/spinner.css',
-  '/js/app.js',
-  '/assets/rift-logo.jpg',
-  '/assets/all/favicon.ico',
-  // Add other static assets as needed, but not Google Sheets
-];
-
-// Install event: cache static assets
+// No caching for offline use - always fetch from network
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+  // Skip waiting to activate immediately
+  self.skipWaiting();
 });
 
-// Fetch event: serve from cache if available, else fetch
-self.addEventListener('fetch', event => {
-  // Skip caching for Google Sheets requests
-  if (event.request.url.includes('docs.google.com/spreadsheets')) {
-    return; // Do not cache, always fetch live
-  }
-
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
-  );
-});
-
-// Activate event: clean up old caches
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+  // Claim all clients
+  event.waitUntil(self.clients.claim());
+});
+
+// Fetch event: if offline, show offline message
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      // If fetch fails (offline), return offline message
+      return new Response(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Offline - Rift</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #0d0a1a; color: #e2e8f0; }
+            h1 { color: #ef4444; }
+          </style>
+        </head>
+        <body>
+          <h1>You are offline</h1>
+          <p>Connect to the internet to use Rift.</p>
+        </body>
+        </html>
+      `, {
+        headers: { 'Content-Type': 'text/html' }
+      });
     })
   );
 });
