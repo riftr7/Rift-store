@@ -7,74 +7,46 @@
   "orientation": "any",
   "scope": "/",
   "short_name": "riftr7.github",
-  "start_url": "/https://riftr7.github.io/Rift-store/#home",
+  "start_url": "/https://riftr7.github.io/Rift-store/",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "https://riftr7.github.io/Rift-store/assets/all/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    },
+    {
+      "src": "https://riftr7.github.io/icons/icon-192.png",
+      "type": "image/png",
       "sizes": "192x192",
-      "type": "image/png"
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 192,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": true
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "https://riftr7.github.io/icons/icon-512.png",
+      "type": "image/png",
       "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/all/favicon.ico",
-      "sizes": "16x16 32x32",
-      "type": "image/x-icon"
-    }
-  ],
-  "lang": "en",
-  "iarc_rating_id": "e84d0719-1d4f-4b48-9dd5-c0406fc7c99b",
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.rift.store",
-      "id": "com.rift.store"
-    },
-    {
-      "platform": "itunes",
-      "url": "https://apps.apple.com/app/rift-store/id123456789"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Go to Store",
-      "short_name": "Store",
-      "description": "Browse digital goods",
-      "url": "/#store",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "View Cart",
-      "short_name": "Cart",
-      "description": "Check your cart",
-      "url": "/#cart",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Contact Us",
-      "short_name": "Contact",
-      "description": "Get in touch",
-      "url": "/#contact",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    }
-  ],
-  "categories": ["shopping", "utilities"],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshots/store.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 512,
+      "is512x512": true,
+      "is256x256": false,
+      "is192x192": false
     }
   ]
 }
