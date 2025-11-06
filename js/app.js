@@ -1496,6 +1496,17 @@ if (document.readyState !== 'loading') { try { const r = location.hash.replace('
 
 
 document.addEventListener('DOMContentLoaded', async ()=>{
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.log('Service Worker registration failed:', error);
+      });
+  }
+
   if(!localStorage.getItem('lang')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('lang','ar'); } else { localStorage.setItem('lang','en'); } }catch(e){} }
   const r = location.hash.replace('#',''); state.route = r || 'home';
 
