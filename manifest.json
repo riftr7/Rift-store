@@ -7,7 +7,7 @@
   "orientation": "any",
   "scope": "/",
   "short_name": "riftr7.github",
-  "start_url": "/",
+  "start_url": "/https://riftr7.github.io/Rift-store/#home",
   "theme_color": "#ffffff",
   "icons": [
     {
@@ -50,3 +50,4 @@
     }
   ]
 }
+
