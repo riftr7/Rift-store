@@ -1,4 +1,4 @@
-:root{
+html{
   --bg:#0d0a1a;
   --card:#1a1530;
   --muted:#94a3b8;
@@ -8,12 +8,13 @@
   --danger:#ef4444;
   --shadow:0 10px 30px rgba(139,92,246,.2);
   --radius:18px;
+  --bg0: #000000;
+  --bg1: #070013;
 }
 
-
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
-a{color:inherit;text-decoration:none}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;}
+a{color:inherit;text-decoration:none;}
 body{padding-top:80px;}
 .container{max-width:none;width:100%;margin:0 auto;padding:24px;transition: opacity 0.3s ease, transform 0.3s ease;}
 .header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,14,19,.7);backdrop-filter:blur(10px);border-bottom:2px solid #8a2be2; box-shadow: 0 0 20px rgba(138,43,226,0.8), 0 0 40px rgba(138,43,226,0.4);}
@@ -564,7 +565,7 @@ html[dir="rtl"] .drawer.open .drawer-panel{transform:translateX(0)}
 .bin-btn{ color:#e11d48; background: rgba(225,29,72,0.08); border:1px solid rgba(225,29,72,0.15); }
 .bin-btn:hover{ background: rgba(225,29,72,0.16); }
 
-
+@keyframes fadeOutUp {
   20%{ opacity:1; transform: translateY(0); }
   70%{ opacity:1; }
   100%{ opacity:0; transform: translateY(-8px); }
@@ -952,7 +953,7 @@ input:focus, textarea:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(139,92,246,0.1), rgba(6,182,212,0.1), rgba(139,92,246,0.1));
+  background: linear-gradient(45deg, rgba(139,92,246,0.2), rgba(139,92,246,0.1), rgba(139,92,246,0.2));
   background-size: 400% 400%;
   animation: gradientShift 8s ease infinite;
   z-index: -1;
@@ -1040,3 +1041,57 @@ input:focus, textarea:focus {
     transform: translate(0, 0) rotateX(0) rotateY(360deg);
   }
 }
+
+/* ===== Cyber Background ===== */
+
+/* Cyber Background Wrapper */
+.cyber-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--bg0);
+}
+
+/* Radial Color Lights */
+.cyber-radials {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1000px 800px at 20% 10%, rgba(168,85,247,0.22), transparent 60%),
+    radial-gradient(900px 700px at 80% 30%, rgba(139,92,246,0.16), transparent 55%),
+    radial-gradient(900px 700px at 50% 90%, rgba(59,130,246,0.07), transparent 60%);
+}
+
+/* Vertical Vignette */
+.cyber-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--bg0), var(--bg1), var(--bg0));
+}
+
+/* Cyber Grid */
+.cyber-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,150,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,150,255,0.08) 1px, transparent 1px),
+    linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px);
+  background-size:
+    140px 140px, 140px 140px,
+    28px 28px,   28px 28px;
+  background-position: center;
+  opacity: 0.75;
+}
+
+/* Center Glow */
+.cyber-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(168,85,247,0.07), transparent 55%);
+}
+
+
