@@ -611,7 +611,7 @@ function header(){
   <header class="header" style="background: rgba(11,14,19,.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,.06);">
     <div class="header-inner container">
       <a class="brand" href="#home" aria-label="Home">
-        <img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
+        <img class="brand-logo" src="assets/riftlogo.png" alt="RIFT logo">
         <div style="color: #8a2be2;">${t('brand')}</div>
       </a>
       <div class="right">
