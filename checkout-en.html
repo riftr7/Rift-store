@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rift — Checkout</title>
+
+  <link rel="icon" type="image/x-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/all/favicon.ico">
+  <link rel="apple-touch-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+  <link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/spinner.css">
+  <meta name="description" content="Checkout for Rift digital goods.">
+</head>
+<body>
+  <!-- Cyber Background -->
+  <div class="cyber-bg" aria-hidden="true">
+    <div class="cyber-radials"></div>
+    <div class="cyber-vignette"></div>
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow"></div>
+  </div>
+
+  <div id="common-header"></div>
+
+  <!-- Checkout Content -->
+  <section class="container">
+    <button type="button" class="btn ghost" id="page-back" style="color:#8a2be2; margin: 12px 0 6px;">Back</button>
+    <div class="section-title">
+      <div>
+        <div class="kicker">Checkout</div>
+        <h2>Complete Your Order</h2>
+      </div>
+    </div>
+
+    <!-- Cart Items Display -->
+    <div class="card">
+      <div class="body">
+        <h3>Cart Items</h3>
+        <div id="cart-items-display"></div>
+      </div>
+    </div>
+
+    <!-- Customer Details Form -->
+    <div class="card">
+      <div class="body">
+        <form id="checkout-form">
+          <label class="small">Customer Name *</label>
+          <input type="text" id="customer-name" required>
+
+          <label class="small">Contact Info (Phone or Email) *</label>
+          <input type="text" id="contact-info" required placeholder="e.g., +964... or email@example.com">
+
+          <label class="small">Full Address *</label>
+          <input type="text" id="address" required placeholder="Your full address">
+
+          <label class="small">Order Type *</label>
+          <select id="order-type" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+            <option value="">Select Order Type</option>
+            <option value="ACCOUNT">Account</option>
+            <option value="SERVICE">Service</option>
+          </select>
+
+          <div id="target-field" style="display: none;">
+            <label class="small">Target (e.g., link, username, account ID) *</label>
+            <input type="text" id="target" required>
+          </div>
+
+          <label class="small">Payment Method *</label>
+          <select id="payment-method" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+            <option value="">Select Payment Method</option>
+            <option value="Zain Cash">Zain Cash</option>
+            <option value="USDT">USDT</option>
+          </select>
+
+          <button class="btn accent block" id="submit-order" disabled>Submit Order</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container cols footer cols">
+      <div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <p class="small">Trusted • Transparent • Clear Pricing</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="watermark-fixed"></div>
+  <script src="js/checkout.js"></script>
+  <script src="js/common-header.js"></script>
+  <script>
+    // Top back button (not in the top bar)
+    document.addEventListener('DOMContentLoaded', () => {
+      const b = document.getElementById('page-back');
+      if (!b) return;
+      b.addEventListener('click', () => {
+        try { if (history.length > 1) return history.back(); } catch (_) {}
+        window.location.href = 'index.html#cart';
+      });
+    });
+  </script>
+</body>
+</html>

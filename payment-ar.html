@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rift — الدفع</title>
+  <link rel="icon" type="image/x-icon" href="assets/all/favicon.ico">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/spinner.css">
+  <meta name="description" content="الدفع لطلب Rift.">
+</head>
+<body>
+  <!-- Cyber Background -->
+  <div class="cyber-bg" aria-hidden="true">
+    <div class="cyber-radials"></div>
+    <div class="cyber-vignette"></div>
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow"></div>
+  </div>
+
+  <div id="common-header"></div>
+
+  <!-- Payment Content -->
+  <section class="container">
+    <div class="section-title">
+      <div>
+        <div class="kicker">الدفع</div>
+        <h2>أكمل الدفع</h2>
+      </div>
+    </div>
+
+    <!-- Total Amount -->
+    <div class="card">
+      <div class="body">
+        <h3>المبلغ الإجمالي</h3>
+        <div id="total-amount" style="font-size: 24px; font-weight: bold; color: var(--accent);"></div>
+      </div>
+    </div>
+
+    <!-- Payment Details -->
+    <div class="card">
+      <div class="body">
+        <h3 id="payment-method-title">طريقة الدفع</h3>
+        <div id="payment-details"></div>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="card">
+      <div class="body">
+        <h3>تعليمات الدفع</h3>
+        <ol>
+          <li>أرسل <strong>المبلغ الدقيق</strong> الموضح أعلاه</li>
+          <li>انسخ رقم الفاتورة</li>
+          <li>افتح دعم Telegram</li>
+          <li>أرسل رقم الفاتورة <strong>أولاً</strong></li>
+          <li>ثم أرسل لقطة شاشة للدفع</li>
+        </ol>
+        <div style="margin-top: 20px;">
+          <p><strong>رقم الفاتورة:</strong> <span id="invoice-id-display"></span></p>
+          <button class="btn accent" id="copy-invoice-id">انسخ رقم الفاتورة</button>
+        </div>
+        <div style="margin-top: 20px;">
+          <button class="btn accent" onclick="window.open('https://t.me/rift_r7support', '_blank')">افتح دعم Telegram</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Finish Button -->
+    <div style="text-align: center; margin-top: 32px;">
+      <button class="btn accent block" id="finish-payment">إنهاء</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container cols footer cols">
+      <div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <p class="small">موثوق • شفاف • أسعار واضحة</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="watermark-fixed"></div>
+  <script src="js/payment.js"></script>
+  <script src="js/common-header.js"></script>
+</body>
+</html>

@@ -11,6 +11,13 @@ const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhJGjRF4ouUs
 // uid helper for older browsers
 function uid(){ try{ if(window.crypto && window.crypto.randomUUID){ return window.uid(); } }catch(e){} return 'id-' + Math.random().toString(36).slice(2); }
 
+// basic HTML escape
+function escapeHtml(s){
+  return (s||'').toString().replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]) || c;
+  });
+}
+
 
 // --- viewport (mobile) ---
 try {
@@ -65,6 +72,12 @@ const i18n = {
     selectOption: 'Select an option',
     notes: 'Notes',
     phoneCityNote: 'Your phone and city will be added to the invoice. You can then copy and send it to the Telegram bot.',
+    orderType: 'Order type',
+    orderTypeAccount: 'Account',
+    orderTypeService: 'Service',
+    serviceTarget: 'Service username / link',
+    serviceTargetPlaceholder: 'e.g., @username or profile link',
+    serviceTargetNote: 'Only required for services in your cart.',
     sendToBotNote: 'Copy this invoice, open Telegram, and send it to',
     invoiceGrandTotal: 'Grand Total',
     mapLink: LOCATION_QUERY,
@@ -112,6 +125,12 @@ const i18n = {
     selectOption: 'اختر خياراً',
     notes: 'ملاحظات',
     phoneCityNote: 'سيتم إضافة هاتفك و مدينتك إلى الفاتورة، ثم انسخها وأرسلها إلى بوت تيليجرام.',
+    orderType: 'نوع الطلب',
+    orderTypeAccount: 'حساب',
+    orderTypeService: 'خدمة',
+    serviceTarget: 'يوزر / رابط الخدمة',
+    serviceTargetPlaceholder: 'مثال: @username أو رابط الحساب',
+    serviceTargetNote: 'يظهر هذا الحقل فقط إذا كانت هناك خدمة في السلة.',
     sendToBotNote: 'انسخ هذه الفاتورة، افتح تيليجرام، ثم أرسلها إلى',
     invoiceGrandTotal: 'الإجمالي النهائي',
     mapLink: LOCATION_QUERY,
@@ -124,7 +143,7 @@ const t = (k)=> i18n[state.lang][k] || k;
 // --- State ---
 const state = {
   route: 'home',
-  lang: localStorage.getItem('lang') || 'en',
+  lang: localStorage.getItem('siteLanguage') || 'en',
   cart: JSON.parse(localStorage.getItem('cart')||'[]'),
   invoiceDetails: null,
   sheetProducts: [],
@@ -216,7 +235,45 @@ const pricesIQD = {
 };
 
 // --- Sheet Prices (IQD) ---
+// pricesSheet[productId][accTypeKey][quantity] = price
 const pricesSheet = {};
+
+// Normalize values coming from the sheet
+function normAccType(v){
+  const s = (v||'').toString().trim().toLowerCase();
+  if(!s || s==='none' || s==='na' || s==='n/a') return 'none';
+  if(s==='shared' || s==='مشترك' || s==='حساب مشترك') return 'shared';
+  if(s==='private' || s==='خاص' || s==='personal' || s==='حساب خاص') return 'private';
+  return s; // fallback
+}
+
+function normBool(v){
+  const s = (v||'').toString().trim().toLowerCase();
+  if(!s) return false;
+  return (s === 'true' || s === '1' || s === 'yes' || s === 'y');
+}
+
+function normOptionLabel(v){
+  return (v||'').toString().trim();
+}
+function normKind(v, fallbackSection){
+  const s = (v||'').toString().trim().toLowerCase();
+  // Accept common variants coming from sheets (SERVICE, Services, الخدمات, etc.)
+  if(s==='service' || s==='خدمة' || s==='services' || s.includes('serv') || s.includes('خدم')) return 'service';
+  if(s==='account' || s==='حساب' || s==='accounts' || s.includes('acc') || s.includes('حسا')) return 'account';
+  const sec = (fallbackSection||'').toString().trim().toLowerCase();
+  if(sec==='service' || sec==='services' || sec.includes('serv') || sec.includes('خدم')) return 'service';
+  if(sec==='account' || sec==='accounts' || sec.includes('acc') || sec.includes('حسا')) return 'account';
+  return 'account';
+}
+
+function cartItemIsService(it){
+  if(!it) return false;
+  if(it.kind === 'service' || it.cat === 'service') return true;
+  const s = (it.section || '').toString().trim().toLowerCase();
+  return (s === 'service' || s === 'services' || s.includes('serv') || s.includes('خدم'));
+}
+
 
 function productTitle(p){
   return state.lang==='ar' ? p.title_ar : p.title_en;
@@ -228,9 +285,30 @@ function serviceDesc(s){
   return state.lang==='ar' ? s.desc_ar : s.desc_en;
 }
 
+function fmtSelectionPair(k,v){
+  if(k==='accType'){
+    if(state.lang==='ar') return 'نوع الحساب: ' + (v==='private'?'خاص':(v==='shared'?'مشترك':v));
+    return 'Account: ' + (v==='private'?'Private':(v==='shared'?'Shared':v));
+  }
+  if(k==='quantity'){
+    if(state.lang==='ar') return 'المدة: ' + localizeDurationLabel(v);
+    return 'Duration: ' + localizeDurationLabel(v);
+  }
+  if(k==='option'){
+    if(state.lang==='ar') return 'الخيار: ' + v;
+    return 'Option: ' + v;
+  }
+  // fallback
+  return k + ': ' + v;
+}
+
+
 function priceFor(productId, selections){
   if (pricesSheet[productId]) {
-    return pricesSheet[productId][selections.quantity] || 0;
+    const acc = normAccType(selections && selections.accType);
+    const opt = normOptionLabel(selections && selections.option) || '__default__';
+    const qty = (selections && selections.quantity) || '';
+    return (pricesSheet[productId][acc] && pricesSheet[productId][acc][opt] && pricesSheet[productId][acc][opt][qty]) || 0;
   }
   if (productId.startsWith('sheet-')) {
     // For sheet products, price is in selections
@@ -269,7 +347,13 @@ function priceFor(productId, selections){
 
 function minPrice(productId){
   if (pricesSheet[productId]) {
-    return Math.min(...Object.values(pricesSheet[productId]));
+    const all = [];
+    Object.values(pricesSheet[productId]).forEach(byAcc=>{
+      Object.values(byAcc||{}).forEach(byOpt=>{
+        Object.values(byOpt||{}).forEach(v=> all.push(Number(v)||0));
+      });
+    });
+    return all.length ? Math.min(...all) : 0;
   }
   if (productId.startsWith('sheet-')) {
     // For sheet products, find min price from sheet items
@@ -304,10 +388,12 @@ function minPrice(productId){
 
 
 function adjustCatalog(){
-  // If sheet products loaded and have items, show only sheet products
-  if (state.loadedSheet && state.sheetProducts.length > 0) {
-    state.products = state.products.filter(p => p.id.startsWith('sheet-'));
-  } else {
+  // If we already replaced catalog from sheet rows, keep it.
+  if(state.loadedSheet && state.products && state.products.length && state.products[0].isSheetProduct){ 
+    return; 
+  }
+
+  // Fallback: use built-in catalog (original behavior)
     // Remove services from products
     state.products = state.products.filter(p=> p.cat !== 'service');
 
@@ -344,7 +430,6 @@ function adjustCatalog(){
       }
       return 0;
     });
-  }
 }
 
 // Localization helpers for option labels (Arabic durations & digits)
@@ -382,7 +467,7 @@ function localizeDurationLabel(label){
 }
 // --- Helpers ---
 function saveCart(){ localStorage.setItem('cart', JSON.stringify(state.cart)); }
-function setLang(l){ state.lang=l; localStorage.setItem('lang', l); document.documentElement.setAttribute('lang', l); document.documentElement.dir = (l==='ar'?'rtl':'ltr'); render(); }
+function setLang(l){ state.lang=l; localStorage.setItem('siteLanguage', l); document.documentElement.setAttribute('lang', l); document.documentElement.dir = (l==='ar'?'rtl':'ltr'); render(); }
 function navigate(route){ state.route = route; window.location.hash = route; render(); }
 window.addEventListener('hashchange', ()=>{ const r = location.hash.replace('#',''); if(r){ if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; } window.scrollTo(0,0); state.route = r; render(); } });
 
@@ -431,30 +516,52 @@ function triggerAddToCartAnimation(){
     }
   }catch(e){}
 }
-function addToCart(id, selections){
+function addToCart(id, selections, qty){
+  qty = Number(qty)||1;
   const p = state.products.find(x=>x.id===id);
   if(!p) return;
   const unitPrice = priceFor(id, selections);
-  state.cart.push({ id: uid(), productId:id, title: productTitle(p), selections, unitPrice, qty:1, image:p.image, cat:p.cat });
+  state.cart.push({ id: uid(), productId:id, title: productTitle(p), selections, unitPrice, qty: qty, image:p.image, cat:p.cat, kind: p.kind || (p.cat==='service'?'service':'account'), section: p.section || '' });
   saveCart();
 triggerAddToCartAnimation();
   // Checkout validation
   const phoneEl = document.getElementById('phone');
   const cityEl = document.getElementById('city');
+  const orderTypeEl = document.getElementById('order-type');
+  const serviceFields = document.getElementById('service-fields');
+  const serviceTargetEl = document.getElementById('service-target');
+  const cartHasService = state.cart.some(cartItemIsService);
+
+  function syncServiceFields(){
+    if(!orderTypeEl || !serviceFields) return;
+    const isServiceOrder = cartHasService || orderTypeEl.value === 'service';
+    serviceFields.style.display = isServiceOrder ? '' : 'none';
+  }
+
   function enableIfValid(){
     if(!cont) return;
     const phone = normalizeIraqPhone(phoneEl && phoneEl.value);
     const city = (cityEl && cityEl.value||'').trim();
-    const isValid = (!!phone && !!city && state.cart.length>0);
+    const isServiceOrder = cartHasService || (orderTypeEl && orderTypeEl.value === 'service');
+    const target = (serviceTargetEl && serviceTargetEl.value||'').trim();
+    const isValid = (!!phone && !!city && state.cart.length>0 && (!isServiceOrder || !!target));
     if(isValid){ cont.removeAttribute('disabled'); } else { cont.setAttribute('disabled',''); }
   }
+
+  if(orderTypeEl){
+    orderTypeEl.addEventListener('change', ()=>{ syncServiceFields(); enableIfValid(); });
+    syncServiceFields();
+  }
+
   if(cont){
     phoneEl && phoneEl.addEventListener('input', enableIfValid);
     cityEl && cityEl.addEventListener('input', enableIfValid);
+    serviceTargetEl && serviceTargetEl.addEventListener('input', enableIfValid);
     enableIfValid();
   }
 
-  // Header single toggle for language
+
+  // Header single toggle for language (header back arrow removed)
   (function(){
     var lt = document.getElementById('lang-toggle');
     if(lt){ lt.addEventListener('click', function(){ setLang(state.lang==='ar' ? 'en' : 'ar'); }); }
@@ -542,15 +649,33 @@ function parseWorkbook(workbook) {
 
 jsonData.forEach((row, index) => {
   if (index === 0) return; // Skip header
-  if (row.length >= 7) { // Check for at least 7 columns
+  // Expected layout (0-based index shown):
+  // A[0] unused/ID (optional)
+  // B[1] Product Name (EN)
+  // C[2] Product Name (AR)
+  // D[3] Quantity
+  // E[4] Price
+  // F[5] Image URL
+  // G[6] Description
+  // H[7] Account Type (private/shared/blank)
+  // I[8] Section (ACCOUNT/SERVICE)
+  // J[9] Description Button (TRUE/FALSE)
+  // K[10] Options label (free text)
+  if (row.length >= 7) {
+    const section = (row[8] || '').toString().trim();
     const item = {
-      englishName: row[1] || '', // Column B: Product Name (English)
-      arabicName: row[2] || '', // Column C: Product Name Arabic
-      quantity: row[3] || '', // Column D: Quantity
-      price: parseFloat(row[4]) || 0, // Column E: Price
-      imageUrl: row[5] || '', // Column F: Image URL
-      description: row[6] || '', // Column G: Description
-      productId: row[0] || '' // Column A: ID (or you can use row number)
+      englishName: row[1] || '',
+      arabicName: row[2] || '',
+      quantity: row[3] || '',
+      price: parseFloat(row[4]) || 0,
+      imageUrl: row[5] || '',
+      description: row[6] || '',
+      accType: (row[7] || '').toString().trim(),
+      section: section,
+      productKind: section,
+      descButton: normBool(row[9]),
+      optionLabel: normOptionLabel(row[10]),
+      productId: (row[0] || '').toString().trim()
     };
     product.items.push(item);
   }
@@ -568,37 +693,92 @@ async function loadSheetProducts() {
   state.loadingSheet = true;
   const loadingDiv = document.getElementById('sheet-loading');
   if (loadingDiv) loadingDiv.classList.remove('hidden');
+
   try {
     const response = await fetch(SHEET_URL);
     if (!response.ok) throw new Error('Failed to fetch sheet');
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    state.sheetProducts = parseWorkbook(workbook);
-    // Add sheet names as products
-    state.sheetProducts.forEach(sheet => {
-      const id = 'sheet-' + sheet.name.replace(/\s+/g, '-').toLowerCase();
-      const product = {
-        id: id,
-        cat: 'digital', // Assuming all sheets are digital for now
-        title_en: sheet.name,
-        title_ar: sheet.items[0]?.arabicName || sheet.name, // Use Arabic name from XLS if available, else English
-        image: sheet.items[0]?.imageUrl || 'assets/apps.png',
-        desc_en: `${sheet.items.length} items`,
-        desc_ar: `${sheet.items.length} عناصر`,
-        options: [] // No options, just view
-      };
-      state.products.push(product);
+
+    // Parse all sheets, then flatten rows into a single list of option rows
+    const parsedSheets = parseWorkbook(workbook);
+    const rows = [];
+    parsedSheets.forEach(s => (s.items || []).forEach(it => rows.push(it)));
+
+    // Build products grouped by product name (preferred) to avoid duplicates when IDs differ per row
+    const byId = {};
+    function slugify(s){
+      return (s||'').toString().trim().toLowerCase()
+        .replace(/\s+/g,'-')
+        .replace(/[^a-z0-9\u0600-\u06FF\-]/g,'')
+        .replace(/\-+/g,'-')
+        .replace(/^\-+|\-+$/g,'') || 'item';
+    }
+
+    rows.forEach((r, idx) => {
+      const nameKey = (r.englishName || r.arabicName || '').toString().trim();
+      const idKey = (r.productId || '').toString().trim();
+      // Prefer grouping by name, fall back to ID if name missing
+      const groupKey = nameKey ? nameKey : idKey;
+      if (!groupKey) return;
+
+      const sectionKey = (r.section || '').toString().trim();
+      const compoundKey = (sectionKey ? sectionKey + '|' : '') + groupKey.toLowerCase();
+      const pid = 'sheetprod-' + slugify(compoundKey);
+
+      if (!byId[pid]) {
+        byId[pid] = {
+          id: pid,
+          isSheetProduct: true,
+          orderIndex: idx,
+          cat: normKind(r.productKind, r.section) === 'service' ? 'service' : 'digital',
+          kind: normKind(r.productKind, r.section), // account | service
+          title_en: (r.englishName || r.arabicName || ('Product ' + groupKey)),
+          title_ar: (r.arabicName || r.englishName || ('منتج ' + groupKey)),
+          image: r.imageUrl || 'assets/apps.png',
+          desc_en: r.description || '',
+          desc_ar: r.description || '',
+          section: sectionKey,
+          sourceProductId: idKey,
+          sheetVariants: []
+        };
+      }
+
+      byId[pid].sheetVariants.push({
+        accType: normAccType(r.accType),
+        quantity: (r.quantity || '').toString().trim(),
+        price: Number(r.price) || 0,
+        description: r.description || '',
+        descButton: !!r.descButton,
+        optionLabel: normOptionLabel(r.optionLabel)
+      });
+
+      // Build pricesSheet map for fast lookup
+      // pricesSheet[pid][accType][optionLabel][quantity] = price
+      pricesSheet[pid] = pricesSheet[pid] || {};
+      const a = normAccType(r.accType);
+      const o = normOptionLabel(r.optionLabel) || '__default__';
+      const q = (r.quantity || '').toString().trim();
+      pricesSheet[pid][a] = pricesSheet[pid][a] || {};
+      pricesSheet[pid][a][o] = pricesSheet[pid][a][o] || {};
+      pricesSheet[pid][a][o][q] = Number(r.price) || 0;
     });
+
+    // Replace catalog with sheet-driven products, but keep services list intact
+    const sheetProducts = Object.values(byId);
+    // Keep the same order as the Google Sheet (first appearance wins)
+    sheetProducts.sort((a,b)=> (a.orderIndex||0) - (b.orderIndex||0));
+
+    state.products = sheetProducts;
     state.loadedSheet = true;
   } catch (error) {
     console.error('Error loading sheet products:', error);
-    state.loadedSheet = true; // Even on error, mark as loaded to use fallback
+    state.loadedSheet = true; // allow fallback UI
   } finally {
     state.loadingSheet = false;
     if (loadingDiv) loadingDiv.classList.add('hidden');
   }
 }
-
 
 
 
@@ -615,10 +795,9 @@ function header(){
         <div style="color: #8a2be2;">${t('brand')}</div>
       </a>
       <div class="right">
-        <a class="btn ghost" href="#store" style="color: #8a2be2;">${t('store')}</a>
         <a class="btn ghost badge-btn" href="#cart" id="cart-btn" aria-label="${t('cart')}" style="color: #8a2be2;">🛒<span id="cart-count" class="badge"></span></a>
         <div class="hamburger" id="hamburger" aria-label="Open menu" style="color: #8a2be2;"><span></span></div>
-        <div class="chip lang-toggle" id="lang-toggle" style="color: #8a2be2;">${state.lang==='ar'?'EN':'AR'}</div>
+        <button class="btn ghost" id="lang-toggle" type="button" style="color: #8a2be2;">EN / العربية</button>
       </div>
 
     </div>
@@ -703,7 +882,13 @@ function viewHome(){
 }
 
 function viewServices(inHome=false){
-  const cards = state.services.map(s=>`
+  // Merge static services (old catalog) with sheet-driven service products.
+  const sheetServiceCards = state.products
+    .filter(p => p && p.cat === 'service')
+    .map(productCard)
+    .join('');
+
+  const staticCards = state.services.map(s=>`
     <div class="card">
       <a class="view-link" href="#store">
         <div class="img"><img src="${s.image || 'assets/apps.png'}" alt="${serviceTitle(s)}"></div>
@@ -716,6 +901,8 @@ function viewServices(inHome=false){
       </div>
     </div>
   `).join('');
+
+  const cards = staticCards + sheetServiceCards;
   return `
   <section class="container">
     <div class="section-title">
@@ -734,8 +921,9 @@ const FIT_IDS = ['office','xbox','chatgpt-personal','chatgpt-shared'];
 function productCard(p){
   const mp = minPrice(p.id);
   const title = productTitle(p);
-  const isSheetProduct = p.id.startsWith('sheet-');
-  const href = isSheetProduct ? `#sheet-product/${p.id}` : `#product/${p.id}`;
+  const isSheetProduct = !!p.isSheetProduct;
+  // Sheet-driven products use the same product view route.
+  const href = `#product/${p.id}`;
   return `
   <div class="card" data-open="${p.id}">
     <div class="img ${FIT_IDS.includes(p.id)?'fit':''}"><img src="${p.image || 'assets/apps.png'}" alt="${title}"></div>
@@ -767,7 +955,10 @@ function sheetProductCard(sheet){
 }
 
 function viewStore(){
-  const goods = state.products.filter(p=>p.cat==='digital').map(productCard).join('');
+  const goods = state.products
+    .filter(p=>p.cat==='digital' || p.cat==='service')
+    .map(productCard)
+    .join('');
   return `
   <section class="container">
     <div class="back-row">
@@ -789,6 +980,99 @@ function viewProduct(id){
   if(!p) { navigate('store'); return ''; }
   const title = productTitle(p);
   const isService = p.cat==='service';
+
+  // Sheet-driven product (from Google Sheet) — uses account type toggle + duration list like your screenshots
+  if(p.isSheetProduct){
+    const variants = (p.sheetVariants||[]).filter(v=>v.quantity);
+    const accSet = Array.from(new Set(variants.map(v=>v.accType||'none')));
+    const hasPrivate = accSet.includes('private');
+    const hasShared  = accSet.includes('shared');
+    const showAccToggle = hasPrivate && hasShared;
+
+    const optSetRaw = variants.map(v=> (v.optionLabel && v.optionLabel.trim()) ? v.optionLabel.trim() : '__default__');
+    const optSet = Array.from(new Set(optSetRaw));
+    const showOptToggle = optSet.length > 1;
+
+    const defaultAcc = hasPrivate ? 'private' : (hasShared ? 'shared' : (accSet[0]||'none'));
+    const defaultOpt = optSet[0] || '__default__';
+
+    function accLabel(acc){
+      if(state.lang==='ar'){
+        if(acc==='private') return 'حساب خاص';
+        if(acc==='shared') return 'حساب مشترك';
+        return '—';
+      }
+      if(acc==='private') return 'Private';
+      if(acc==='shared') return 'Shared';
+      return '—';
+    }
+
+    // Build duration cards; JS will filter dynamically by accType + optionLabel
+    // If Column J (Description Button) is TRUE for that row, clicking that option will expand a small panel
+    // that shows the description from Column G.
+    const durationCards = variants.map(v=>{
+      const durLabel = localizeDurationLabel(v.quantity);
+      const desc = escapeHtml(v.description || p.desc_ar || p.desc_en || '');
+      const opt = (v.optionLabel && v.optionLabel.trim()) ? v.optionLabel.trim() : '__default__';
+      const hasDesc = !!v.descButton;
+      return `
+        <div class="rift-opt-card ${hasDesc ? 'is-service' : ''}" data-acc="${v.accType}" data-opt="${escapeHtml(opt)}" data-qty="${escapeHtml(v.quantity)}" data-price="${v.price}" data-has-desc="${hasDesc ? '1' : '0'}">
+          <div class="rift-opt-main">
+            <div class="rift-opt-left">IQD ${new Intl.NumberFormat('en-US').format(v.price)}</div>
+            <div class="rift-opt-right">${durLabel}</div>
+          </div>
+          ${hasDesc ? `<div class="rift-opt-desc" style="display:none;">${desc}</div>` : ``}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <section class="container">
+        <div class="back-row">
+          <a class="btn accent" href="#store">‹ ${t('back')}</a>
+        </div>
+
+        <div class="card">
+          <div class="body">
+            <div class="rift-modal-head">
+              <strong style="font-size:20px">${title}</strong>
+            </div>
+
+            ${showAccToggle ? `
+              <div class="rift-seg" id="acc-seg" data-default="${defaultAcc}">
+                <button class="rift-seg-btn" data-acc="private">${accLabel('private')}</button>
+                <button class="rift-seg-btn" data-acc="shared">${accLabel('shared')}</button>
+              </div>
+            ` : ``}
+
+            ${showOptToggle ? `
+              <div class="rift-seg" id="opt-seg" data-default-opt="${escapeHtml(defaultOpt)}">
+                ${optSet.map(o=> `<button class="rift-seg-btn" data-opt="${escapeHtml(o)}">${escapeHtml(o==='__default__' ? (state.lang==='ar' ? 'اعتيادي' : 'Normal') : o)}</button>`).join('')}
+              </div>
+            ` : ``}
+
+            <div class="rift-opt-list" id="sheet-opt-list">
+              ${durationCards}
+            </div>
+
+            <div id="sheet-qty-wrap" class="rift-qty-wrap" style="display:none;">
+              <div class="rift-qty-row">
+                <button type="button" class="btn ghost rift-qty-btn" id="sheet-qty-minus">-</button>
+                <span class="rift-qty-val" id="sheet-qty-val">1</span>
+                <button type="button" class="btn ghost rift-qty-btn" id="sheet-qty-plus">+</button>
+                <div style="flex:1"></div>
+                <div class="rift-total" id="sheet-total">IQD 0</div>
+              </div>
+            </div>
+
+            <button class="btn accent block" id="add-sheet-selected" disabled>${state.lang==='ar'?'إضافة للسلة':t('addToCart')}</button>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+
 
 
   // Merged ChatGPT special view
@@ -965,6 +1249,7 @@ function viewCart(){
   `).join('');
   return `
   <section class="container">
+    <button class="btn ghost" id="cart-top-back" type="button" style="color:#8a2be2; margin: 12px 0 6px;">${state.lang==='ar' ? 'رجوع' : 'Back'}</button>
     <div class="section-title">
       <div>
         <div class="kicker">${t('cart')}</div>
@@ -978,7 +1263,8 @@ function viewCart(){
           <thead><tr><th>Item</th><th>${t('price')}</th><th>${t('quantity')}</th><th></th></tr></thead>
           <tbody>${rows || `<tr><td colspan="4" class="small">${t('emptyCart')}</td></tr>`}</tbody>
         </table>
-        <div style="display:flex;gap:12px;justify-content:flex-end">
+        <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+          <a class="btn ghost" href="${state.lang==='ar' ? 'orders-ar.html' : 'orders.html'}">${state.lang==='ar' ? 'الطلبات السابقة' : 'Old Orders'}</a>
           <a class="btn ghost" href="#store">${t('continueShopping')}</a>
           <button class="btn accent" id="checkout" ${state.cart.length? '' : 'disabled'}>${t('checkout')}</button>
         </div>
@@ -1000,6 +1286,8 @@ function viewCart(){
 }
 
 function viewCheckout(){
+  const hasService = state.cart.some(cartItemIsService);
+  const orderType = hasService ? 'service' : 'account';
   return `
   <section class="container">
     <div class="section-title">
@@ -1009,12 +1297,27 @@ function viewCheckout(){
       </div>
       <div class="tag">${t('total')}: ${fmtIQD(cartTotal())}</div>
     </div>
+
     <div class="card">
       <div class="body">
-        <label class="small">${t('iraqPhone')}</label>
+        <label class="small">${t('orderType')}</label>
+        <select id="order-type" ${hasService ? 'disabled' : ''}>
+          <option value="account" ${orderType==='account'?'selected':''}>${t('orderTypeAccount')}</option>
+          <option value="service" ${orderType==='service'?'selected':''}>${t('orderTypeService')}</option>
+        </select>
+
+        <div id="service-fields" style="${hasService ? '' : 'display:none'}; margin-top:10px">
+          <label class="small">${t('serviceTarget')}</label>
+          <input type="text" id="service-target" placeholder="${t('serviceTargetPlaceholder')}" />
+          <p class="small">${t('serviceTargetNote')}</p>
+        </div>
+
+        <label class="small" style="margin-top:10px">${t('iraqPhone')}</label>
         <input type="tel" id="phone" placeholder="+9647XXXXXXXXX or 07XXXXXXXXX">
+
         <label class="small">${t('city')}</label>
         <input type="text" id="city" placeholder="e.g., Najaf">
+
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px">
           <a class="btn ghost" href="#cart">${t('backToCart')}</a>
           <button class="btn accent" id="continue-invoice" disabled>${t('continue')}</button>
@@ -1024,6 +1327,7 @@ function viewCheckout(){
     </div>
   </section>`;
 }
+
 
 function invoiceText(){
   const id = Math.random().toString(36).slice(2,10).toUpperCase();
@@ -1037,11 +1341,21 @@ function invoiceText(){
     lines.push(`التاريخ/الوقت: ${date}`);
     lines.push(`الهاتف: ${phone}`);
     lines.push(`المدينة: ${city}`);
+    const orderType = (state.invoiceDetails && state.invoiceDetails.orderType) || 'account';
+    const serviceTarget = (state.invoiceDetails && state.invoiceDetails.serviceTarget) || '';
+    lines.push(`نوع الطلب: ${orderType==='service'?'خدمة':'حساب'}`);
+    if(orderType==='service'){ lines.push(`يوزر/رابط الخدمة: ${serviceTarget}`); }
+
   }else{
     lines.push(`Rift — Invoice #${id}`);
     lines.push(`Date/Time: ${date}`);
     lines.push(`Phone: ${phone}`);
     lines.push(`City: ${city}`);
+    const orderType = (state.invoiceDetails && state.invoiceDetails.orderType) || 'account';
+    const serviceTarget = (state.invoiceDetails && state.invoiceDetails.serviceTarget) || '';
+    lines.push(`Order type: ${orderType==='service'?'Service':'Account'}`);
+    if(orderType==='service'){ lines.push(`Service username/link: ${serviceTarget}`); }
+
   }
   lines.push(`--------------------------------`);
   state.cart.forEach(i=>{
@@ -1257,6 +1571,184 @@ function render(){
 })();
 
 
+  /* Sheet product (Google Sheet) bindings: account type toggle + duration selection */
+  (function(){
+    if(!state.route.startsWith('product/')) return;
+    const productId = state.route.split('/')[1];
+    const prod = state.products.find(x=>x.id===productId);
+    if(!prod || !prod.isSheetProduct) return;
+
+    const accSeg = document.getElementById('acc-seg');
+    const accBtns = accSeg ? Array.from(accSeg.querySelectorAll('.rift-seg-btn')) : [];
+    const optSeg = document.getElementById('opt-seg');
+    const optBtns = optSeg ? Array.from(optSeg.querySelectorAll('.rift-seg-btn')) : [];
+    const optList = document.getElementById('sheet-opt-list');
+    const optCards = optList ? Array.from(optList.querySelectorAll('.rift-opt-card')) : [];
+    const addBtn = document.getElementById('add-sheet-selected');
+
+    const qtyWrap = document.getElementById('sheet-qty-wrap');
+    const qtyValEl = document.getElementById('sheet-qty-val');
+    const qtyMinus = document.getElementById('sheet-qty-minus');
+    const qtyPlus  = document.getElementById('sheet-qty-plus');
+    const totalEl  = document.getElementById('sheet-total');
+
+    // Defaults must still be set even when toggles are not shown.
+    const variants = (prod.sheetVariants||[]).filter(v=>v.quantity);
+    const accSet = Array.from(new Set(variants.map(v=>v.accType||'none')));
+    const hasPrivate = accSet.includes('private');
+    const hasShared  = accSet.includes('shared');
+    let currentAcc = (accSeg && accSeg.getAttribute('data-default')) || (hasPrivate ? 'private' : (hasShared ? 'shared' : (accSet[0]||'none')));
+
+    const optSetRaw = variants.map(v=> (v.optionLabel && v.optionLabel.trim()) ? v.optionLabel.trim() : '__default__');
+    const optSet = Array.from(new Set(optSetRaw));
+    let currentOpt = (optSeg && optSeg.getAttribute('data-default-opt')) || (optSet[0] || '__default__');
+    let pickedQty = null;
+    let pickedUnit = 0;
+    let pickedCount = 1;
+
+    function hideAllDescs(){
+      optCards.forEach(c=>{
+        const d = c.querySelector('.rift-opt-desc');
+        if(d) d.style.display = 'none';
+      });
+    }
+
+    function updatePickedTotal(){
+      if(qtyValEl) qtyValEl.textContent = String(pickedCount);
+      if(!totalEl) return;
+      const total = Math.max(0, (Number(pickedUnit)||0) * (Number(pickedCount)||1));
+      totalEl.textContent = 'IQD ' + new Intl.NumberFormat('en-US').format(total);
+    }
+    function showQty(){
+      if(qtyWrap) qtyWrap.style.display = '';
+      updatePickedTotal();
+    }
+    function hideQty(){
+      if(qtyWrap) qtyWrap.style.display = 'none';
+      pickedUnit = 0;
+      pickedCount = 1;
+      updatePickedTotal();
+    }
+
+    function applyFilter(){
+      // Toggle buttons state
+      accBtns.forEach(b=>{
+        if(b.getAttribute('data-acc')===currentAcc) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      optBtns.forEach(b=>{
+        if(b.getAttribute('data-opt')===currentOpt) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      // Show only matching accType + optionLabel (when toggles exist)
+      optCards.forEach(c=>{
+        const a = c.getAttribute('data-acc') || 'none';
+        const o = c.getAttribute('data-opt') || '__default__';
+        const showAcc = (!accSeg) ? true : (a===currentAcc);
+        const showOpt = (!optSeg) ? true : (o===currentOpt);
+        const show = showAcc && showOpt;
+        c.style.display = show ? '' : 'none';
+        if(!show) c.classList.remove('active');
+        if(!show){
+          const d = c.querySelector('.rift-opt-desc');
+          if(d) d.style.display = 'none';
+        }
+      });
+
+      // If current selection hidden, clear
+      if(pickedQty){
+        const still = optCards.some(c=>c.classList.contains('active') && c.style.display!=='none');
+        if(!still){
+          pickedQty = null;
+          hideQty();
+          addBtn && addBtn.setAttribute('disabled','');
+        }
+      }
+    }
+
+    function selectCard(card){
+      optCards.forEach(c=>c.classList.remove('active'));
+      hideAllDescs();
+      card.classList.add('active');
+      const hasDesc = (card.getAttribute('data-has-desc')||'0') === '1';
+      if(hasDesc){
+        const d = card.querySelector('.rift-opt-desc');
+        if(d && d.textContent.trim()!=='') d.style.display = 'block';
+      }
+      pickedQty = card.getAttribute('data-qty');
+      pickedUnit = Number(card.getAttribute('data-price')) || 0;
+      pickedCount = 1;
+      showQty();
+      addBtn && addBtn.removeAttribute('disabled');
+    }
+
+    accBtns.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        currentAcc = b.getAttribute('data-acc') || 'none';
+        pickedQty = null;
+        hideAllDescs();
+        hideQty();
+        addBtn && addBtn.setAttribute('disabled','');
+        optCards.forEach(c=>c.classList.remove('active'));
+        applyFilter();
+      });
+    });
+    optBtns.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        currentOpt = b.getAttribute('data-opt') || '__default__';
+        pickedQty = null;
+        hideAllDescs();
+        hideQty();
+        addBtn && addBtn.setAttribute('disabled','');
+        optCards.forEach(c=>c.classList.remove('active'));
+        applyFilter();
+      });
+    });
+
+    optCards.forEach(card=>{
+      card.addEventListener('click', ()=>{
+        if(card.style.display==='none') return;
+        if(card.classList.contains('active')){
+          card.classList.remove('active');
+          hideAllDescs();
+          pickedQty = null;
+          hideQty();
+          addBtn && addBtn.setAttribute('disabled','');
+        }else{
+          selectCard(card);
+        }
+      });
+    });
+
+    applyFilter();
+
+    // Quantity stepper (shows after picking an option)
+    if(qtyMinus){
+      qtyMinus.addEventListener('click', ()=>{
+        if(!pickedQty) return;
+        pickedCount = Math.max(1, (pickedCount||1) - 1);
+        updatePickedTotal();
+      });
+    }
+    if(qtyPlus){
+      qtyPlus.addEventListener('click', ()=>{
+        if(!pickedQty) return;
+        pickedCount = Math.max(1, (pickedCount||1) + 1);
+        updatePickedTotal();
+      });
+    }
+
+    if(addBtn){
+      addBtn.addEventListener('click', ()=>{
+        if(!pickedQty) return;
+        const sel = { accType: currentAcc, quantity: pickedQty };
+        if(currentOpt && currentOpt !== '__default__') sel.option = currentOpt;
+        addToCart(productId, sel, pickedCount);
+      });
+    }
+  })();
+
 
 
   const choices = document.getElementById('choices');
@@ -1301,6 +1793,14 @@ function render(){
   }
 
   // Cart bindings
+  const cartBackBtn = document.getElementById('cart-top-back');
+  if(cartBackBtn){
+    cartBackBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      try{ if(window.history.length>1) return window.history.back(); }catch(_){ }
+      navigate('store');
+    });
+  }
   document.querySelectorAll('[data-remove]').forEach(btn=> btn.addEventListener('click', ()=> removeFromCart(btn.getAttribute('data-remove'))));
   document.querySelectorAll('[data-qty]').forEach(btn=> btn.addEventListener('click', ()=>{
     const [id,delta] = btn.getAttribute('data-qty').split('|'); changeQty(id, Number(delta));
@@ -1360,7 +1860,7 @@ function render(){
   if(checkoutBtn){
     checkoutBtn.addEventListener('click', ()=>{
       if(!state.cart.length){ return; }
-      navigate('checkout');
+      window.location.href = 'checkout-' + state.lang + '.html';
     });
   }
 
@@ -1372,11 +1872,28 @@ function render(){
       const normalized = normalizeIraqPhone(phoneRaw);
       if(!normalized){ alert(state.lang==='ar'?'أدخل رقم هاتف عراقي صحيح':'Please enter a valid Iraqi mobile number'); return; }
       if(!city){ alert(state.lang==='ar'?'أدخل المدينة':'Please enter your city'); return; }
-      state.invoiceDetails = { phone: normalized, city, createdAt: new Date().toISOString() };
+
+      const cartHasService = state.cart.some(cartItemIsService);
+      const orderTypeEl = document.getElementById('order-type');
+      const chosenType = (orderTypeEl && orderTypeEl.value) ? orderTypeEl.value : 'account';
+      const orderType = cartHasService ? 'service' : chosenType;
+
+      let serviceTarget = '';
+      if(orderType === 'service'){
+        const targetEl = document.getElementById('service-target');
+        serviceTarget = (targetEl && targetEl.value || '').trim();
+        if(!serviceTarget){
+          alert(state.lang==='ar'?'أدخل يوزر/رابط الخدمة':'Please enter the service username/link');
+          return;
+        }
+      }
+
+      state.invoiceDetails = { phone: normalized, city, orderType, serviceTarget, createdAt: new Date().toISOString() };
       cont.setAttribute('disabled', '');
       navigate('invoice');
     };
   }
+
 
   const copyBtn = document.getElementById('copy-invoice');
   if(copyBtn){
@@ -1398,18 +1915,39 @@ function render(){
   // Checkout validation
   const phoneEl = document.getElementById('phone');
   const cityEl = document.getElementById('city');
+  const orderTypeEl = document.getElementById('order-type');
+  const serviceFields = document.getElementById('service-fields');
+  const serviceTargetEl = document.getElementById('service-target');
+  const cartHasService = state.cart.some(cartItemIsService);
+
+  function syncServiceFields(){
+    if(!orderTypeEl || !serviceFields) return;
+    const isServiceOrder = cartHasService || orderTypeEl.value === 'service';
+    serviceFields.style.display = isServiceOrder ? '' : 'none';
+  }
+
   function enableIfValid(){
     if(!cont) return;
     const phone = normalizeIraqPhone(phoneEl && phoneEl.value);
     const city = (cityEl && cityEl.value||'').trim();
-    const isValid = (!!phone && !!city && state.cart.length>0);
+    const isServiceOrder = cartHasService || (orderTypeEl && orderTypeEl.value === 'service');
+    const target = (serviceTargetEl && serviceTargetEl.value||'').trim();
+    const isValid = (!!phone && !!city && state.cart.length>0 && (!isServiceOrder || !!target));
     if(isValid){ cont.removeAttribute('disabled'); } else { cont.setAttribute('disabled',''); }
   }
+
+  if(orderTypeEl){
+    orderTypeEl.addEventListener('change', ()=>{ syncServiceFields(); enableIfValid(); });
+    syncServiceFields();
+  }
+
   if(cont){
     phoneEl && phoneEl.addEventListener('input', enableIfValid);
     cityEl && cityEl.addEventListener('input', enableIfValid);
+    serviceTargetEl && serviceTargetEl.addEventListener('input', enableIfValid);
     enableIfValid();
   }
+
 
   // Header single toggle for language
   (function(){
@@ -1507,7 +2045,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       });
   }
 
-  if(!localStorage.getItem('lang')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('lang','ar'); } else { localStorage.setItem('lang','en'); } }catch(e){} }
+  if(!localStorage.getItem('siteLanguage')){ try{ const pref = ((typeof navigator!=='undefined' && navigator.language) ? navigator.language : 'en').toLowerCase(); if(pref.startsWith('ar')){ localStorage.setItem('siteLanguage','ar'); } else { localStorage.setItem('siteLanguage','en'); } }catch(e){} }
   const r = location.hash.replace('#',''); state.route = r || 'home';
 
   // Add sheet loading indicator

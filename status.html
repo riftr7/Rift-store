@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rift — Order Status</title>
+
+  <link rel="icon" type="image/x-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/all/favicon.ico">
+  <link rel="apple-touch-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+  <link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/spinner.css">
+  <style>
+    .status-bubble {
+      display: inline-block;
+      padding: 8px 16px;
+      margin: 4px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text-secondary);
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .status-bubble.active {
+      background: rgba(138,43,226,0.2);
+      border-color: #8a2be2;
+      color: #8a2be2;
+    }
+    .status-bubble.current {
+      background: #8a2be2;
+      color: white;
+      box-shadow: 0 0 10px rgba(138,43,226,0.5);
+    }
+  </style>
+  <meta name="description" content="Order status for Rift digital goods.">
+</head>
+<body>
+  <!-- Cyber Background -->
+  <div class="cyber-bg" aria-hidden="true">
+    <div class="cyber-radials"></div>
+    <div class="cyber-vignette"></div>
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow"></div>
+  </div>
+
+  <!-- Shared Header (same as home) -->
+  <div id="common-header"></div>
+
+  <!-- Status Content -->
+  <section class="container">
+    <!-- Invoice ID and Support -->
+    <div id="invoice-section" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="invoice-text" style="color: var(--text-primary); font-size: 16px;">Invoice ID: Loading...</span>
+        <button id="copy-invoice-btn" class="btn accent" style="padding: 6px 12px; font-size: 14px;">Copy</button>
+      </div>
+      <button id="support-btn" class="btn accent" style="padding: 8px 16px; font-size: 14px;">الدعم الفني</button>
+    </div>
+
+    <div class="section-title">
+      <div>
+        <div class="kicker">Order Status</div>
+        <h2 id="status-title">Checking...</h2>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <p id="status-message">Please wait while we check your order status.</p>
+        <div id="account-details" style="display: none; margin-top: 16px;">
+          <h3 id="account-details-title">Delivery Details</h3>
+          <div id="account-details-fields"></div>
+          <textarea id="account-details-raw" readonly style="display:none; width:100%; min-height:160px; background: var(--card); border:1px solid rgba(255,255,255,.12); color: var(--text); border-radius: 12px; padding: 12px; margin-top: 12px; resize: vertical; white-space: pre; overflow:auto;"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container cols footer cols">
+      <div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <p class="small">Trusted • Transparent • Clear Pricing</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="watermark-fixed"></div>
+  <script src="js/status.js"></script>
+  <script src="js/common-header.js"></script>
+</body>
+</html>

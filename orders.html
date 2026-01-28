@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Rift — Digital Goods & Services</title>
+  <title>Rift — Old Orders</title>
 
   <link rel="icon" type="image/x-icon" href="assets/all/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/all/favicon.ico">
@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/spinner.css">
-  <meta name="description" content="اشتراكات رقمية، شحن جميع ألالعاب، وخدمات رشق لجميع التطبيقات.">
+  <meta name="description" content="Old orders for Rift digital goods.">
 </head>
 <body>
   <!-- Cyber Background -->
@@ -24,16 +24,38 @@
     <div class="cyber-grid"></div>
     <div class="cyber-glow"></div>
   </div>
-  <div id="app"></div>
+
+  <div id="common-header"></div>
+
+  <!-- Orders Content -->
+  <section class="container">
+    <div class="section-title">
+      <div>
+        <div class="kicker">Orders</div>
+        <h2>Your Order History</h2>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <div id="orders-list">
+          <p>Loading orders...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container cols footer cols">
+      <div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <p class="small">Trusted • Transparent • Clear Pricing</p>
+      </div>
+    </div>
+  </footer>
+
   <div class="watermark-fixed"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    // Language detection and redirect
-    const userLang = navigator.language || navigator.userLanguage;
-    if (userLang.startsWith('ar') && window.location.pathname.endsWith('index.html')) {
-      window.location.href = 'index-ar.html';
-    }
-  </script>
+  <script src="js/orders.js"></script>
+  <script src="js/common-header.js"></script>
 </body>
 </html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rift — الدفع</title>
+
+  <link rel="icon" type="image/x-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/all/favicon.ico">
+  <link rel="apple-touch-icon" href="assets/all/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+  <link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/spinner.css">
+  <meta name="description" content="الدفع لمنتجات Rift الرقمية.">
+</head>
+<body>
+  <!-- Cyber Background -->
+  <div class="cyber-bg" aria-hidden="true">
+    <div class="cyber-radials"></div>
+    <div class="cyber-vignette"></div>
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow"></div>
+  </div>
+
+  <!-- Shared Header -->
+  <div id="common-header"></div>
+
+  <!-- Checkout Content -->
+  <section class="container">
+    <button type="button" class="btn ghost" id="page-back" style="color:#8a2be2; margin: 12px 0 6px;">رجوع</button>
+    <div class="section-title">
+      <div>
+        <div class="kicker">الدفع</div>
+        <h2>أكمل طلبك</h2>
+      </div>
+    </div>
+
+    <!-- Cart Items Display -->
+    <div class="card">
+      <div class="body">
+        <h3>محتويات السلة</h3>
+        <div id="cart-items-display"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <form id="checkout-form">
+          <label class="small">اسم العميل *</label>
+          <input type="text" id="customer-name" required>
+
+          <label class="small">معلومات الاتصال (هاتف أو بريد إلكتروني) *</label>
+          <input type="text" id="contact-info" required placeholder="مثال: +964... أو email@example.com">
+
+          <label class="small">العنوان *</label>
+          <input type="text" id="address" required placeholder="عنوانك الكامل">
+
+          <label class="small">نوع الطلب *</label>
+          <select id="order-type" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+            <option value="">اختر نوع الطلب</option>
+            <option value="ACCOUNT">حساب</option>
+            <option value="SERVICE">خدمة</option>
+          </select>
+
+          <div id="target-field" style="display: none;">
+            <label class="small">الهدف (مثال: رابط، اسم مستخدم، معرف حساب) *</label>
+            <input type="text" id="target" required placeholder="مثال: @username أو رابط">
+          </div>
+
+          <label class="small">طريقة الدفع *</label>
+          <select id="payment-method" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+            <option value="">اختر طريقة الدفع</option>
+            <option value="Zain Cash">Zain Cash</option>
+            <option value="USDT">USDT</option>
+          </select>
+
+          <button class="btn accent block" id="submit-order" disabled>إرسال الطلب</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container cols footer cols">
+      <div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <p class="small">موثوق • شفاف • أسعار واضحة</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="watermark-fixed"></div>
+  <script src="js/checkout.js"></script>
+  <script src="js/common-header.js"></script>
+</body>
+</html>

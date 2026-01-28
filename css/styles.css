@@ -3,6 +3,9 @@ html{
   --card:#1a1530;
   --muted:#94a3b8;
   --text:#e2e8f0;
+  /* Back-compat for pages that reference these vars */
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
   --brand:#8b5cf6;
   --accent:#06b6d4;
   --danger:#ef4444;
@@ -63,6 +66,18 @@ body{padding-top:80px;}
 .right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap;flex:0 0 auto;justify-content:flex-end}
 .tag{font-size:12px;color:#cbd5e1}
 select, input[type="number"], input[type="tel"], input[type="text"], textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#e2e8f0}
+
+/* Mobile Safari/Chrome autofill can force white backgrounds; keep inputs matching the dark theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #e2e8f0;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,.03) inset;
+  box-shadow: 0 0 0px 1000px rgba(255,255,255,.03) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
 hr{border:0;border-top:1px solid rgba(255,255,255,.06);margin:12px 0}
 .small{font-size:12px;color:var(--muted)}
 .logo-watermark{opacity:.9}
@@ -130,6 +145,32 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 430px){
   .btn{padding:8px 10px;font-size:12px}
   .lang-switch .chip{padding:4px 6px;font-size:12px}
+}
+
+/* ===== Checkout / Status / Payment: mobile friendliness ===== */
+@media (max-width: 640px){
+  /* Prevent fixed header from eating content */
+  body{ padding-top: 76px; }
+
+  /* Status invoice bar should wrap instead of overflowing */
+  #invoice-section{
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  #invoice-section > div{
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+  }
+  #invoice-text{ font-size: 14px !important; }
+  #copy-invoice-btn, #support-btn{
+    width: 100% !important;
+  }
+
+  /* Forms: bigger tap targets, avoid horizontal scroll */
+  input[type="text"], input[type="tel"], input[type="number"], select, textarea{
+    font-size: 16px; /* iOS: stop zoom on focus */
+  }
 }
 
 html,body{overflow-x:hidden;touch-action:pan-y;overscroll-behavior-x:contain}
@@ -1042,6 +1083,120 @@ input:focus, textarea:focus {
   }
 }
 
+/* Progress Bubbles */
+.progress-bubbles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.progress-bubbles::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: rgba(255,255,255,0.2);
+  z-index: 1;
+}
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.bubble.active {
+  opacity: 1;
+}
+
+.bubble.completed {
+  opacity: 1;
+}
+
+.bubble-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.bubble.active .bubble-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+}
+
+.bubble.completed .bubble-icon {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.bubble-text {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 80px;
+}
+
+.bubble.active .bubble-text {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.bubble.completed .bubble-text {
+  color: var(--brand);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .progress-bubbles {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .progress-bubbles::before {
+    top: 25px;
+    left: 25px;
+    right: 25px;
+    width: 2px;
+    height: calc(100% - 50px);
+  }
+
+  .bubble {
+    flex-direction: row;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .bubble-icon {
+    margin-bottom: 0;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .bubble-text {
+    max-width: none;
+    font-size: 14px;
+  }
+}
+
 /* ===== Cyber Background ===== */
 
 /* Cyber Background Wrapper */
@@ -1095,3 +1250,109 @@ input:focus, textarea:focus {
 }
 
 
+
+
+/* --- Sheet product option UI (account toggle + duration cards) --- */
+.rift-seg{
+  display:flex;
+  gap:10px;
+  margin:14px 0 10px;
+}
+.rift-seg-btn{
+  flex:1;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.04);
+  color: inherit;
+  font-weight: 800;
+  cursor:pointer;
+}
+.rift-seg-btn.active{
+  border:2px solid rgba(255,255,255,.65);
+  background: rgba(255,255,255,.06);
+}
+
+.rift-opt-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:10px;
+}
+.rift-opt-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.03);
+  cursor:pointer;
+}
+
+.rift-opt-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+}
+
+/* Service option cards can expand to show a description panel (from Sheet column G) */
+.rift-opt-card.is-service{
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:10px;
+}
+.rift-opt-card.is-service .rift-opt-main{
+  width:100%;
+}
+.rift-opt-desc{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.02);
+  opacity:.95;
+  line-height:1.4;
+}
+.rift-opt-card.active{
+  border:2px solid rgba(255,255,255,.75);
+  background: rgba(255,255,255,.05);
+}
+.rift-opt-left{
+  font-weight:900;
+  letter-spacing:.2px;
+}
+.rift-opt-right{
+  opacity:.9;
+  font-weight:800;
+}
+
+
+/* Sheet product quantity row (appears after selecting an option) */
+.rift-qty-wrap{ margin-top: 14px; }
+.rift-qty-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(255,255,255,.03);
+}
+.rift-qty-btn{
+  min-width: 44px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+.rift-qty-val{
+  min-width: 28px;
+  text-align:center;
+  font-weight: 800;
+  font-size: 16px;
+}
+.rift-total{
+  font-weight: 900;
+}
