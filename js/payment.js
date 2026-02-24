@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
       paymentDetails.innerHTML = `
         <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
           <h4 style="color: #3b82f6; margin: 0 0 8px 0;">USDT Payment</h4>
-          <p style="margin: 0; font-size: 16px; word-break: break-all;">Wallet Address: <span id="usdt-address">TQJ17DsKQL2HeTBbze3zCHECKZCSs2ubip</span></p>
+          <p style="margin: 0; font-size: 16px; word-break: break-all;">Wallet Address: <span id="usdt-address">TPJ3KonAkmM1YX7mnSo186SJy1EULPcj6Y</span></p>
           <button class="btn accent" id="copy-usdt-address" style="margin-top: 12px;">Copy Wallet Address</button>
         </div>
       `;
@@ -100,3 +100,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'status.html';
   });
 });
+
