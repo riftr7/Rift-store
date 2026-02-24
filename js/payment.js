@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Failed to copy phone number.');
         }
       });
-    } else if (currentOrder.paymentMethod === 'USDT') {
+    } else if (currentOrder.paymentMethod === 'USDT(TRC20)') {
       paymentDetails.innerHTML = `
         <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
           <h4 style="color: #3b82f6; margin: 0 0 8px 0;">USDT Payment</h4>
@@ -100,4 +100,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'status.html';
   });
 });
+
 
