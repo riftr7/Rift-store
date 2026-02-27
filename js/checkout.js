@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
   // Display cart items
   const cart = JSON.parse(localStorage.getItem('cart') || '[]');
   const cartDisplay = document.getElementById('cart-items-display');
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06);">
             <div>
               <strong>${item.title}</strong>
-              <div class="small">${Object.entries(item.selections || {}).map(([k,v]) => `${k}: ${v}`).join(', ')}</div>
+              <div class="small">${Object.entries(item.selections || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}</div>
             </div>
             <div style="text-align: right;">
               <div class="small">Qty: ${item.qty}</div>
@@ -45,24 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
       cartDisplay.innerHTML = cartHTML + `<div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.12); text-align: right;"><strong>Total: ${fmtIQD(total)}</strong></div>`;
     }
   }
+
   const form = document.getElementById('checkout-form');
   const orderTypeSelect = document.getElementById('order-type');
   const targetField = document.getElementById('target-field');
   const targetInput = document.getElementById('target');
   const submitOrder = document.getElementById('submit-order');
+  const paymentMethodSelect = document.getElementById('payment-method');
 
-    // Auto-detect order type from cart (SERVICE if any item is service)
-  try{
-    const hasService = cart.some(it => (it && ((it.kind||'').toString().toLowerCase()==='service' || (it.cat||'').toString().toLowerCase()==='service')));
-    if(hasService){
+  // Auto-detect order type from cart (SERVICE if any item is service)
+  try {
+    const hasService = cart.some(it => (it && ((it.kind || '').toString().toLowerCase() === 'service' || (it.cat || '').toString().toLowerCase() === 'service')));
+    if (hasService) {
       orderTypeSelect.value = 'SERVICE';
     } else {
       orderTypeSelect.value = 'ACCOUNT';
     }
     // Lock the dropdown to avoid mismatch
     orderTypeSelect.disabled = true;
-  }catch(_e){}
-// Order type logic
+  } catch (_e) { }
+
+  // Order type logic
   orderTypeSelect.addEventListener('change', () => {
     if (orderTypeSelect.value === 'SERVICE') {
       targetField.style.display = 'block';
@@ -76,6 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply initial state
   orderTypeSelect.dispatchEvent(new Event('change'));
 
+  // Payment method change — no card number field at checkout anymore
+  paymentMethodSelect.addEventListener('change', () => {
+    validateForm();
+  });
 
   // Form validation
   function validateForm() {
@@ -84,48 +92,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const address = document.getElementById('address').value.trim();
     const orderType = orderTypeSelect.value;
     const target = targetInput.value.trim();
-    const paymentMethod = document.getElementById('payment-method').value;
+    const paymentMethod = paymentMethodSelect.value;
 
     const isValid = customerName && contactInfo && address && orderType &&
-                    (orderType !== 'SERVICE' || target) && paymentMethod;
+      (orderType !== 'SERVICE' || target) && paymentMethod;
 
     submitOrder.disabled = !isValid;
   }
 
-  // Save order data and redirect to payment page
-  function saveOrderAndRedirect(data, invoiceID, token) {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-    const orderData = {
-      invoiceID,
-      token,
-      createdAt: Date.now(),
-      paymentMethod: document.getElementById('payment-method').value,
-      cart: cart.map(item => ({ name: item.title, qty: item.qty, price: item.unitPrice })),
-      customerName: document.getElementById('customer-name').value.trim(),
-      contact: document.getElementById('contact-info').value.trim(),
-      address: document.getElementById('address').value.trim(),
-      orderType: orderTypeSelect.value,
-      target: targetInput.value.trim()
-    };
-
-    // Save to localStorage.orders as array
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    orders.push(orderData);
-    localStorage.setItem('orders', JSON.stringify(orders));
-
-    // Save to localStorage.currentOrder
-    localStorage.setItem('currentOrder', JSON.stringify({ invoiceID, token }));
-
-    // Redirect to payment page (match current language)
-    window.location.href = isArabic ? 'payment-ar.html' : 'payment.html';
-  }
-
   form.addEventListener('input', validateForm);
   form.addEventListener('change', validateForm);
+  paymentMethodSelect.addEventListener('change', validateForm);
+
+  // Helper: build receipt text from cart
+  function buildReceiptText(cart, paymentMethod) {
+    let receiptText = isArabic ? '🧾 إيصال الطلب\n\n' : '🧾 Order Receipt\n\n';
+    let total = 0;
+    cart.forEach((item, index) => {
+      const emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][index] || '📦';
+      const subtotal = item.unitPrice * item.qty;
+      total += subtotal;
+
+      const sel = item.selections || {};
+      const accRaw = (sel.accType || '').toString().trim().toLowerCase();
+      const durationLabel = (sel.quantity || '').toString().trim();
+      const optionLabel = (sel.option || '').toString().trim();
+
+      const accLabelEn = accRaw === 'shared' ? 'Shared' : accRaw === 'private' ? 'Private' : '-';
+      const accLabelAr = accRaw === 'shared' ? 'حساب مشترك' : accRaw === 'private' ? 'حساب خاص' : '-';
+      const accLabel = isArabic ? accLabelAr : accLabelEn;
+
+      receiptText += `${emoji} ${item.title}\n`;
+      receiptText += `${isArabic ? 'نوع الحساب' : 'Account type'}: ${accLabel}\n`;
+      receiptText += `${isArabic ? 'عدد الحسابات' : 'Qty'}: ${item.qty}\n`;
+      if (durationLabel) {
+        receiptText += `${isArabic ? 'المدة / الباقة' : 'Duration / Package'}: ${durationLabel}\n`;
+      }
+      if (optionLabel) {
+        receiptText += `${isArabic ? 'الخيار' : 'Option'}: ${optionLabel}\n`;
+      }
+      receiptText += `${isArabic ? 'السعر' : 'Price'}: ${item.unitPrice} IQD\n`;
+      receiptText += `${isArabic ? 'المجموع الفرعي' : 'Subtotal'}: ${subtotal} IQD\n\n`;
+    });
+
+    // Add 2000 IQD fee for Asiacell Cards or Zain Cards
+    if (paymentMethod === 'Asiacell Cards' || paymentMethod === 'Zain Cards') {
+      total += 2000;
+      receiptText += `${isArabic ? 'رسوم التحويل' : 'Transfer Fee'}: 2,000 IQD\n\n`;
+    }
+
+    receiptText += '------------------\n';
+    receiptText += `${isArabic ? 'المجموع' : 'Total'}: ${total} IQD`;
+
+    return { receiptText, total };
+  }
 
   submitOrder.addEventListener('click', async (e) => {
     e.preventDefault();
+
+    const paymentMethod = paymentMethodSelect.value;
+    const isCardPayment = (paymentMethod === 'Asiacell Cards' || paymentMethod === 'Zain Cards');
 
     // Show loading overlay
     const overlay = document.createElement('div');
@@ -133,38 +159,20 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.innerHTML = `
       <div class="loading-content">
         <span class="loader"></span>
-        <p>Sending Order...</p>
+        <p>${isCardPayment ? (isArabic ? 'جارٍ التحويل...' : 'Redirecting...') : (isArabic ? 'جارٍ إرسال الطلب...' : 'Sending Order...')}</p>
       </div>
     `;
     overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);
+      z-index: 9999; display: flex; align-items: center; justify-content: center;
     `;
-    // Style the loading content
     const loadingContent = overlay.querySelector('.loading-content');
     loadingContent.style.cssText = `
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      font-size: 18px;
-      font-weight: 500;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; color: white; font-size: 18px; font-weight: 500;
     `;
-    const loader = loadingContent.querySelector('.loader');
-    loader.style.cssText = `
-      margin-bottom: 20px;
-    `;
+    loadingContent.querySelector('.loader').style.cssText = 'margin-bottom: 20px;';
     document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
 
@@ -172,110 +180,91 @@ document.addEventListener('DOMContentLoaded', () => {
     submitOrder.disabled = true;
 
     try {
-      // Get cart from localStorage
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const { receiptText } = buildReceiptText(cart, paymentMethod);
 
-      // Build receipt text
-      let receiptText = isArabic ? '🧾 إيصال الطلب\n\n' : '🧾 Order Receipt\n\n';
-      let total = 0;
-      cart.forEach((item, index) => {
-        const emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][index] || '📦';
-        const subtotal = item.unitPrice * item.qty;
-        total += subtotal;
-
-        const sel = item.selections || {};
-        const accRaw = (sel.accType || '').toString().trim().toLowerCase();
-        const durationLabel = (sel.quantity || '').toString().trim();
-        const optionLabel = (sel.option || '').toString().trim();
-
-        const accLabelEn = accRaw === 'shared' ? 'Shared' : accRaw === 'private' ? 'Private' : '-';
-        const accLabelAr = accRaw === 'shared' ? 'حساب مشترك' : accRaw === 'private' ? 'حساب خاص' : '-';
-        const accLabel = isArabic ? accLabelAr : accLabelEn;
-
-        receiptText += `${emoji} ${item.title}\n`;
-        // Account type (above quantity)
-        receiptText += `${isArabic ? 'نوع الحساب' : 'Account type'}: ${accLabel}\n`;
-        // Quantity of accounts/items
-        receiptText += `${isArabic ? 'عدد الحسابات' : 'Qty'}: ${item.qty}\n`;
-        // Sheet quantity (duration / package)
-        if (durationLabel) {
-          receiptText += `${isArabic ? 'المدة / الباقة' : 'Duration / Package'}: ${durationLabel}\n`;
-        }
-        if (optionLabel) {
-          receiptText += `${isArabic ? 'الخيار' : 'Option'}: ${optionLabel}\n`;
-        }
-        receiptText += `${isArabic ? 'السعر' : 'Price'}: ${item.unitPrice} IQD\n`;
-        receiptText += `${isArabic ? 'المجموع الفرعي' : 'Subtotal'}: ${subtotal} IQD\n\n`;
-      });
-      receiptText += '------------------\n';
-      receiptText += `${isArabic ? 'المجموع' : 'Total'}: ${total} IQD`;
-
-      const payload = {
+      // Gather customer info
+      const customerInfo = {
         customerName: document.getElementById('customer-name').value.trim(),
         contact: document.getElementById('contact-info').value.trim(),
         address: document.getElementById('address').value.trim(),
-        productName: receiptText,
         orderType: orderTypeSelect.value,
         target: targetInput.value.trim(),
-        paymentMethod: document.getElementById('payment-method').value
+        paymentMethod: paymentMethod,
+        receiptText: receiptText
       };
 
-      console.log(payload);
-      console.log(JSON.stringify(payload));
+      if (isCardPayment) {
+        // ========== CARD PAYMENT: Do NOT submit order yet ==========
+        // Save everything to localStorage, redirect to payment page
+        // The order will be submitted from the payment page after card number is entered
+        const orderData = {
+          ...customerInfo,
+          cart: cart.map(item => ({ title: item.title, name: item.title, qty: item.qty, unitPrice: item.unitPrice, selections: item.selections })),
+          timestamp: new Date().toISOString(),
+          createdAt: Date.now(),
+          status: 'Awaiting Card Number',
+          pendingSubmission: true  // Flag: order not yet sent to backend
+        };
 
-      const response = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ payload: JSON.stringify(payload) })
-      });
-      const text = await response.text();
-      console.log(text);
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        // If parsing fails, still try to show Invoice ID if available
-      }
-      if (data && data.success && data.invoiceID) {
-        // Save order data and redirect to payment page
-        saveOrderAndRedirect(data, data.invoiceID, data.token);
+        localStorage.setItem('currentOrder', JSON.stringify(orderData));
+        // Redirect to payment page
+        window.location.href = isArabic ? 'payment-ar.html' : 'payment.html';
+
       } else {
-        alert('Order submitted. Please wait and check Telegram.');
+        // ========== NON-CARD PAYMENT: Submit order now ==========
+        const payload = {
+          customerName: customerInfo.customerName,
+          contact: customerInfo.contact,
+          address: customerInfo.address,
+          productName: receiptText,
+          orderType: customerInfo.orderType,
+          target: customerInfo.target,
+          paymentMethod: paymentMethod
+        };
+
+        const response = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ payload: JSON.stringify(payload) })
+        });
+        const text = await response.text();
+        let data;
+        try { data = JSON.parse(text); } catch { }
+
+        if (data && data.success && data.invoiceID) {
+          const orderData = {
+            invoiceID: data.invoiceID,
+            token: data.token,
+            cart: cart.map(item => ({ title: item.title, name: item.title, qty: item.qty, unitPrice: item.unitPrice, selections: item.selections })),
+            customerName: customerInfo.customerName,
+            contact: customerInfo.contact,
+            address: customerInfo.address,
+            orderType: customerInfo.orderType,
+            target: customerInfo.target,
+            paymentMethod: paymentMethod,
+            timestamp: new Date().toISOString(),
+            createdAt: Date.now(),
+            status: 'Checking Payment'
+          };
+
+          const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+          orders.push(orderData);
+          localStorage.setItem('orders', JSON.stringify(orders));
+          localStorage.setItem('currentOrder', JSON.stringify(orderData));
+
+          window.location.href = isArabic ? 'payment-ar.html' : 'payment.html';
+        } else {
+          alert(isArabic ? 'تم إرسال الطلب. يرجى الانتظار والتحقق من Telegram.' : 'Order submitted. Please wait and check Telegram.');
+        }
       }
     } catch (error) {
-      alert('Error submitting order.');
+      alert(isArabic ? 'خطأ في إرسال الطلب.' : 'Error submitting order.');
     } finally {
-      // Remove loading overlay and restore button state
       const overlay = document.getElementById('loading-overlay');
       if (overlay) overlay.remove();
       document.body.style.overflow = '';
       submitOrder.disabled = false;
     }
-
-  // Save order data and redirect to payment page
-  function saveOrderAndRedirect(data, invoiceID, token) {
-    const orderData = {
-      invoiceID,
-      token,
-      cart: JSON.parse(localStorage.getItem('cart') || '[]'),
-      customerName: document.getElementById('customer-name').value.trim(),
-      contact: document.getElementById('contact-info').value.trim(),
-      address: document.getElementById('address').value.trim(),
-      orderType: orderTypeSelect.value,
-      target: targetInput.value.trim(),
-      paymentMethod: document.getElementById('payment-method').value,
-      timestamp: new Date().toISOString(),
-      status: 'Checking Payment'
-    };
-
-    // Save to localStorage
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    orders.push(orderData);
-    localStorage.setItem('orders', JSON.stringify(orders));
-    localStorage.setItem('currentOrder', JSON.stringify(orderData));
-
-    // Redirect to payment page (match current language)
-    window.location.href = isArabic ? 'payment-ar.html' : 'payment.html';
-  }
   });
 });

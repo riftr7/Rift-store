@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="css/spinner.css">
   <meta name="description" content="الدفع لطلب Rift.">
 </head>
+
 <body>
   <!-- Cyber Background -->
   <div class="cyber-bg" aria-hidden="true">
@@ -42,6 +44,10 @@
       <div class="body">
         <h3 id="payment-method-title">طريقة الدفع</h3>
         <div id="payment-details"></div>
+        <div id="payment-card-field" style="display: none; margin-top: 16px;">
+          <label class="small">رقم بطاقة الدفع *</label>
+          <input type="text" id="payment-card-number" placeholder="أدخل رقم البطاقة" required>
+        </div>
       </div>
     </div>
 
@@ -61,7 +67,8 @@
           <button class="btn accent" id="copy-invoice-id">انسخ رقم الفاتورة</button>
         </div>
         <div style="margin-top: 20px;">
-          <button class="btn accent" onclick="window.open('https://t.me/rift_r7support', '_blank')">افتح دعم Telegram</button>
+          <button class="btn accent" onclick="window.open('https://t.me/rift_r7support', '_blank')">افتح دعم
+            Telegram</button>
         </div>
       </div>
     </div>
@@ -76,7 +83,9 @@
   <footer class="footer">
     <div class="container cols footer cols">
       <div>
-        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
+          <div>RIFT</div>
+        </div>
         <p class="small">موثوق • شفاف • أسعار واضحة</p>
       </div>
     </div>
@@ -86,4 +95,5 @@
   <script src="js/payment.js"></script>
   <script src="js/common-header.js"></script>
 </body>
+
 </html>

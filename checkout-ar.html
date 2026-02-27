@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -12,10 +13,11 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
   <link rel="manifest" href="/manifest.json">
-<link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="css/spinner.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/spinner.css">
   <meta name="description" content="الدفع لمنتجات Rift الرقمية.">
 </head>
+
 <body>
   <!-- Cyber Background -->
   <div class="cyber-bg" aria-hidden="true">
@@ -58,7 +60,8 @@
           <input type="text" id="address" required placeholder="عنوانك الكامل">
 
           <label class="small">نوع الطلب *</label>
-          <select id="order-type" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+          <select id="order-type" required
+            style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
             <option value="">اختر نوع الطلب</option>
             <option value="ACCOUNT">حساب</option>
             <option value="SERVICE">خدمة</option>
@@ -70,11 +73,15 @@
           </div>
 
           <label class="small">طريقة الدفع *</label>
-          <select id="payment-method" required style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
+          <select id="payment-method" required
+            style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
             <option value="">اختر طريقة الدفع</option>
             <option value="Zain Cash">Zain Cash</option>
-            <option value="USDT">USDT(TRC20)</option>
+            <option value="Binance">Binance</option>
+            <option value="Asiacell Cards">بطاقات آسياسيل</option>
+            <option value="Zain Cards">بطاقات زين</option>
           </select>
+
 
           <button class="btn accent block" id="submit-order" disabled>إرسال الطلب</button>
         </form>
@@ -86,7 +93,9 @@
   <footer class="footer">
     <div class="container cols footer cols">
       <div>
-        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo"><div>RIFT</div></div>
+        <div class="brand"><img class="brand-logo" src="assets/rift-logo.jpg" alt="RIFT logo">
+          <div>RIFT</div>
+        </div>
         <p class="small">موثوق • شفاف • أسعار واضحة</p>
       </div>
     </div>
@@ -96,4 +105,5 @@
   <script src="js/checkout.js"></script>
   <script src="js/common-header.js"></script>
 </body>
+
 </html>
