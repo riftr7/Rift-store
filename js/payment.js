@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         : currentOrder.paymentMethod === 'Binance' ? 'Binance'
           : currentOrder.paymentMethod === 'Asiacell Cards' ? 'بطاقات آسياسيل'
             : currentOrder.paymentMethod === 'Zain Cards' ? 'بطاقات زين'
-              : currentOrder.paymentMethod)
+              : currentOrder.paymentMethod === 'SuperQI' ? 'SuperQI'
+                : currentOrder.paymentMethod)
       : currentOrder.paymentMethod;
     methodTitle.textContent = `${isArabic ? 'طريقة الدفع' : 'Payment Method'}: ${methodLabel}`;
   }
@@ -60,13 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
       paymentDetails.innerHTML = `
         <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
           <h4 style="color: #22c55e; margin: 0 0 8px 0;">${isArabic ? 'الدفع عبر زين كاش' : 'Zain Cash Payment'}</h4>
-          <p style="margin: 0; font-size: 18px; font-weight: bold;">${isArabic ? 'رقم الهاتف' : 'Phone Number'}: <span id="zain-number">07814175536</span></p>
+          <p style="margin: 0; font-size: 18px; font-weight: bold;">${isArabic ? 'رقم الهاتف' : 'Phone Number'}: <span id="zain-number">+9647813629884</span></p>
           <button class="btn accent" id="copy-zain-number" style="margin-top: 12px;">${isArabic ? 'نسخ رقم الهاتف' : 'Copy Phone Number'}</button>
         </div>
       `;
       document.getElementById('copy-zain-number').addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText('07814175536');
+          await navigator.clipboard.writeText('+9647813629884');
           alert(isArabic ? 'تم نسخ رقم الهاتف!' : 'Phone number copied!');
         } catch (err) {
           alert(isArabic ? 'فشل في نسخ الرقم.' : 'Failed to copy phone number.');
@@ -112,6 +113,23 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       if (paymentCardField) paymentCardField.style.display = 'block';
+
+    } else if (currentOrder.paymentMethod === 'SuperQI') {
+      paymentDetails.innerHTML = `
+        <div style="background: rgba(0,188,212,0.1); border: 1px solid rgba(0,188,212,0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
+          <h4 style="color: #00bcd4; margin: 0 0 8px 0;">${isArabic ? 'الدفع عبر SuperQI' : 'SuperQI Payment'}</h4>
+          <p style="margin: 0; font-size: 18px; font-weight: bold;">${isArabic ? 'رقم الهاتف' : 'Phone Number'}: <span id="superqi-number">+9647813629884</span></p>
+          <button class="btn accent" id="copy-superqi-number" style="margin-top: 12px;">${isArabic ? 'نسخ رقم الهاتف' : 'Copy Phone Number'}</button>
+        </div>
+      `;
+      document.getElementById('copy-superqi-number').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText('+9647813629884');
+          alert(isArabic ? 'تم نسخ رقم الهاتف!' : 'Phone number copied!');
+        } catch (err) {
+          alert(isArabic ? 'فشل في نسخ الرقم.' : 'Failed to copy phone number.');
+        }
+      });
     }
   }
 
