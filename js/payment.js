@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
           : currentOrder.paymentMethod === 'Asiacell Cards' ? 'بطاقات آسياسيل'
             : currentOrder.paymentMethod === 'Zain Cards' ? 'بطاقات زين'
               : currentOrder.paymentMethod === 'SuperQI' ? 'SuperQI'
-                : currentOrder.paymentMethod)
+                : currentOrder.paymentMethod === 'Mastercard' ? 'Mastercard ماستر'
+                  : currentOrder.paymentMethod)
       : currentOrder.paymentMethod;
     methodTitle.textContent = `${isArabic ? 'طريقة الدفع' : 'Payment Method'}: ${methodLabel}`;
   }
@@ -128,6 +129,26 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(isArabic ? 'تم نسخ رقم الهاتف!' : 'Phone number copied!');
         } catch (err) {
           alert(isArabic ? 'فشل في نسخ الرقم.' : 'Failed to copy phone number.');
+        }
+      });
+
+    } else if (currentOrder.paymentMethod === 'Mastercard') {
+      paymentDetails.innerHTML = `
+        <div style="background: rgba(235,0,27,0.1); border: 1px solid rgba(235,0,27,0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
+          <h4 style="color: #eb001b; margin: 0 0 8px 0;">
+            <svg style="width:20px;height:20px;vertical-align:middle;margin-right:6px;" viewBox="0 0 24 24"><circle cx="9" cy="12" r="7" fill="#eb001b"/><circle cx="15" cy="12" r="7" fill="#f79e1b" opacity="0.8"/></svg>
+            ${isArabic ? 'الدفع عبر Mastercard ماستر' : 'Mastercard Payment'}
+          </h4>
+          <p style="margin: 0; font-size: 16px; word-break: break-all;">${isArabic ? 'معرف Mastercard' : 'Mastercard ID'}: <span id="mastercard-id" style="font-weight:bold; color: #eb001b;">910106758709</span></p>
+          <button class="btn accent" id="copy-mastercard-id" style="margin-top: 12px;">${isArabic ? 'نسخ معرف Mastercard' : 'Copy Mastercard ID'}</button>
+        </div>
+      `;
+      document.getElementById('copy-mastercard-id').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText('910106758709');
+          alert(isArabic ? 'تم نسخ معرف Mastercard!' : 'Mastercard ID copied!');
+        } catch (err) {
+          alert(isArabic ? 'فشل في نسخ المعرف.' : 'Failed to copy Mastercard ID.');
         }
       });
     }

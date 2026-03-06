@@ -15,6 +15,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/spinner.css">
+  <link rel="stylesheet" href="css/payment-selector.css?v=3">
   <meta name="description" content="الدفع لمنتجات Rift الرقمية.">
 </head>
 
@@ -76,9 +77,10 @@
           <select id="payment-method" required
             style="background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--text);">
             <option value="">اختر طريقة الدفع</option>
-            <option value="Zain Cash">Zain Cash</option>
-            <option value="SuperQI">SuperQI</option>
-            <option value="Binance">Binance</option>
+            <option value="Zain Cash">زين كاش</option>
+            <option value="SuperQI">سوبر كي</option>
+            <option value="Mastercard">ماستر</option>
+            <option value="Binance">باينانس</option>
             <option value="Asiacell Cards">بطاقات آسياسيل</option>
             <option value="Zain Cards">بطاقات زين</option>
           </select>
@@ -103,6 +105,7 @@
   </footer>
 
   <div class="watermark-fixed"></div>
+  <script src="js/payment-selector.js?v=3"></script>
   <script src="js/checkout.js"></script>
   <script src="js/common-header.js"></script>
 </body>
