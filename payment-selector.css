@@ -1,0 +1,219 @@
+/* ===== Custom Payment Method Selector ===== */
+
+/* Ensure parent containers don't clip the dropdown */
+.card:has(.pm-selector),
+.card:has(.pm-selector) .body,
+.card:has(.pm-selector) form,
+.card:has(.pm-selector) .form-group {
+  overflow: visible !important;
+}
+
+.pm-selector {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+  z-index: 100;
+}
+
+.pm-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--card, #1a1a2e);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text, #fff);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  min-height: 48px;
+}
+
+.pm-selected:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pm-selector.open .pm-selected {
+  border-radius: 10px 10px 0 0;
+  border-color: var(--accent, #8a2be2);
+}
+
+.pm-selected-text {
+  opacity: 0.5;
+  font-size: 14px;
+}
+
+.pm-selected-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pm-logo-sm {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.pm-arrow {
+  font-size: 14px;
+  opacity: 0.5;
+  transition: transform 0.3s ease;
+}
+
+.pm-selector.open .pm-arrow {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.pm-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card, #1a1a2e);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  pointer-events: none;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.pm-dropdown.open {
+  max-height: 400px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pm-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  color: var(--text, #fff);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.pm-option:last-child {
+  border-bottom: none;
+}
+
+.pm-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pm-option:active {
+  transform: scale(0.98);
+}
+
+.pm-option.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pm-option.active::before {
+  content: '✓';
+  position: absolute;
+  right: 16px;
+  color: var(--accent, #8a2be2);
+  font-weight: bold;
+}
+
+[dir="rtl"] .pm-option.active::before {
+  right: auto;
+  left: 16px;
+}
+
+.pm-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: none;
+  transition: transform 0.2s ease;
+}
+
+.pm-option:hover .pm-logo {
+  transform: scale(1.08);
+}
+
+.pm-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ===== Payment Page Theming ===== */
+.pm-hero {
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 8px;
+  animation: pmHeroFade 0.6s ease;
+}
+
+.pm-hero-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 40px var(--pm-glow, transparent);
+  animation: pmLogoPulse 3s ease-in-out infinite;
+}
+
+@keyframes pmHeroFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pmLogoPulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 30px var(--pm-glow, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 50px var(--pm-glow, transparent);
+  }
+}
+
+/* Background glow overlay */
+.pm-bg-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  pointer-events: none;
+  z-index: 0;
+  animation: pmGlowFade 1s ease;
+}
+
+@keyframes pmGlowFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
